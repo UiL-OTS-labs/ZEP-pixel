@@ -1,0 +1,5 @@
+#zep database folder
+/db/*
+
+#vim temporary files
+**.sw?
