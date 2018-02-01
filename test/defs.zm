@@ -1,0 +1,24 @@
+/*
+ * This zep module adds various constants that are used throughout this
+ * experiment.
+ */
+
+// Duration of the interval between two trials.
+const dur       INTERTRIAL_INTERVAL             = 1000ms;
+
+// Duration of the fixation symbol presentation.
+const dur       FIXATION_DURATION               = 1000ms;
+
+// Duration of the prime stimulus presentation.
+const dur       PRIME_DURATION                  = 500ms;
+
+// Duration of the interval between prime and target.
+const dur       PRIME2TARGET_INTERVAL           = 300ms;
+
+// Duration of the feedback presentation.
+const dur       FEEDBACK_DURATION               = 1000ms;
+
+// Duration of the response interval. A value of 0ms means there is no
+// timeout.
+const dur       RESPONSE_DURATION               = 2000ms;       // auto-paced
+//const dur       RESPONSE_DURATION               = 0ms;          // self-paced

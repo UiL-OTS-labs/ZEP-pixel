@@ -1,0 +1,43 @@
+
+// Symbolic definition of item type.
+enum ItemType
+{
+    NON_WORD,                   // non-word
+    UNRELATED,                  // real word with unrelated prime
+    RELATED,                    // real word with semantically related prime
+}
+
+
+// Item table record.
+record TestItem
+{
+    int         id;             // item id
+    ItemType    type;           // item type
+    string      wordfn;         // stimulus word sound filename
+    string      prime;          // prime word
+}
+
+
+// Practice item table.
+//   index: item number
+TestItem[..] prac_items =
+{
+    {1,         NON_WORD,       "palve.wav",    "onion"},
+    {2,         UNRELATED,      "hot.wav",      "stapler"},
+};
+
+
+// Test item table.
+//   index: item number
+TestItem[..] test_items =
+{
+    {1,         NON_WORD,       "slirque.wav",  "eyes"},
+    {2,         NON_WORD,       "crawse.wav",   "piano"},
+    {3,         NON_WORD,       "thwurp.wav",   "rabbit"},
+    {4,         NON_WORD,       "clem.wav",     "flower"},
+
+    {5,         RELATED,        "white.wav",    "snow"},
+    {6,         RELATED,        "travel.wav",   "suitcase"},
+    {7,         UNRELATED,      "letter.wav",   "garden"},
+    {8,         UNRELATED,      "clown.wav",    "forest"},
+};
