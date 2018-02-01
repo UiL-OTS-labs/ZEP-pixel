@@ -7,6 +7,68 @@ enum ItemType
     RELATED,                    // real word with semantically related prime
 }
 
+enum MatchType {
+    MATCH,      // 
+    MISMATCH    //
+}
+
+/*
+ * Used to select stimluli from the sounds and images array. Hence both
+ * arrays should have exactly the same number of items as there are 
+ * members in enum StimNum.
+ */
+enum StimNum{
+    S1 = 0,
+    S2,
+    S3,
+    S4,
+    S5,
+    S6,
+    S7,
+}
+
+// The names of the stimuli; the directory/folder and extension will be added
+// programmatically.
+string[..] sounds = {
+    "sound1",
+    "sound2",
+    "sound3",
+    "sound4",
+    "sound5",
+    "sound6",
+    "sound7"
+};
+
+// The names of the stimuli; the directory/folder and extension will be added
+// programmatically.
+string[..] images = {
+    "image1",
+    "image2",
+    "image3",
+    "image4",
+    "image5",
+    "image6",
+    "image7"
+};
+
+record StimPair {
+    string sound_fn;    // Filename of the sound.
+    string pic_fn;      // Filename of the picture.
+};
+
+// Returns a stimulus pair
+StimPair get_stim_pair(StimNum n)
+{
+    StimPair pair;
+    pair.sound_fn   = sounds[n];
+    pair.pic_fn     = images[n];
+    return pair;
+}
+
+record PracticeItem {
+    int     prac_id;    // id for tracking/sorting items in the output.
+    StimNum pair_num;   // The pair of stimuli selected.
+};
 
 // Item table record.
 record TestItem
