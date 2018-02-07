@@ -104,14 +104,14 @@ LearnItem[..] learn_items = {
 
 
 /*
- * Item table record. These items determine what audio is played and where
- * which pictures are displayed.
+ * TestItem record. These items determine what audio is played and where
+ * which pictures are displayed and what is the appropriate response.
  *
  * For the practice and test phase four items are presented.
  * And a sound is played as display by the music note on the right.
  * The audio corresponds uniquely to one of the four positions
  *
- * the screen looks a little like:
+ * The screen looks a little like:
  * _________________________________
  * |   _________       _________   |
  * |   |       |       |       |   |
@@ -119,12 +119,12 @@ LearnItem[..] learn_items = {
  * |   |_______|       |_______|   |     |\
  * |                               |     | \
  * |                               |     |  \
- * |   _________       _________   |   * |   \ Audio is played.
+ * |   _________       _________   |   * |   \  Audio is played.
  * |   |       |       |       |   |  ***|    |
- * |   |   3   |       |   4   |   |   *    * |
- * |   |_______|       |_______|   |       ***|
- * |_______________________________|        *
- *
+ * |   |   3   |       |   4   |   |   *      |
+ * |   |_______|       |_______|   |        * |
+ * |_______________________________|       ***|
+ *                                          * 
  */
 record TestItem
 {
@@ -156,10 +156,16 @@ TestItem[..] prac_items =
     {8,     S1,     1,      S1,   S7,   S6,     S5},
 };
 
-
-
 // Test item table.
 //   index: item number
 TestItem[..] test_items =
 {
+    {1,     S5,     4,      S1,   S7,   S6,     S5},
+    {2,     S7,     3,      S2,   S1,   S7,     S6},
+    {3,     S2,     2,      S3,   S2,   S1,     S7},
+    {4,     S4,     1,      S4,   S3,   S2,     S1},
+    {5,     S2,     4,      S5,   S4,   S3,     S2},
+    {6,     S4,     3,      S6,   S5,   S4,     S3},
+    {7,     S6,     2,      S7,   S6,   S5,     S4},
+    {8,     S1,     1,      S1,   S7,   S6,     S5},
 };
