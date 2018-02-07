@@ -5,10 +5,11 @@
  // Shuffles nothing yet, to be implemented
 int shuffle_test_items()
 {
-//    learn_items.shuffle(0, -1);
+    learn_items.shuffle(0, -1);
 //    prac_items.shuffle(0, -1);
 //    test_items.shuffle(0, -1);
 //    discr_items.shuffle(0, -1);
+    println("rember to implement shuffle for other parts in the test.");
 
     return OK;
 }

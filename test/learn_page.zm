@@ -1,0 +1,556 @@
+
+
+import std_sound_output_device;
+
+
+enum ResponseVal {
+    REP_ITEM,   // used to repeat an item.
+    NEXT_ITEM,  // used to go to the next item.
+    S1_ITEM,    // used to select the first item.
+    S2_ITEM,    // etc.
+    S3_ITEM,
+    S4_ITEM,
+    S5_ITEM,
+    S6_ITEM,
+    S7_ITEM,
+    FINISH_ITEM, // Used to indicate that this part should be done.
+}
+
+
+// Keeps track whether all stimulus pairs are presented.
+bool[..] presented;
+
+void init_presented(int size)
+{
+    presented.size = size;
+    int i = 0;
+    while(i < presented.size) {
+        presented[i] = false;
+        i++;
+    }
+}
+
+Page learn_page
+{
+    LearnItem   item;           // trial control parameters
+    StimPair    pair;           // Currently presented pair
+    int         new_item;       // number of selected new item
+    ResponseVal next_item;      // Set on response and to indicate whether
+                                // the task is done.
+    init()
+    {
+        fill_pattern_color  = TEST_PAGE_COLOR;
+        new_item            = 0; // the index for the next item.
+        next_item           = NEXT_ITEM;
+        init_presented(learn_items.size);
+    }
+    
+    bool is_finished()
+    {
+        return next_item == FINISH_ITEM;
+    }
+
+    // Test whether all items are presented.
+    bool all_learn_items_presented() {
+        int i = 0;
+        while (i < presented.size) {
+            if (!presented[i])
+                return false;
+            i++;
+        }
+        return true;
+    }
+
+    on_event:key_press()
+    {
+        // Handle left-shift (no) and right-shift (yes).
+        if (input_key == KEY_Shift_L)
+            response.process_hit(REP_ITEM, event_time);
+        else if (input_key == KEY_Shift_R)
+            response.process_hit(NEXT_ITEM, event_time);
+        else
+            handle_special_key(this, input_key, input_modifiers);
+    }
+
+    on_event:message()
+    {
+        // Process button-box message. See setup() below.
+        if (message_arg == 0) // A button on the left side
+            response.process_hit(REP_ITEM, event_time);
+        else // A button on the right side of the button box.
+            response.process_hit(NEXT_ITEM, event_time);
+    }
+
+    VerticalLayout layout
+    {
+        init()
+        {
+            spacing = 50;
+            height = 0;     // 0 means as large as possible
+        }
+
+        LabelGadget instruction
+        {
+            init()
+            {
+                text = "Instruction while learning.";
+                font_family = TEST_PAGE_LABEL_FONT_FAMILY;
+                font_size   = TEST_PAGE_LABEL_FONT_SIZE;
+            }
+        }
+
+        CanvasGadget canvas
+        {
+            init()
+            {
+                fill_pattern_color = TEST_PAGE_STIMULUS_COLOR;
+                size = 300, 300;
+
+                // Put the origin in the center.
+                offset_x = width/2;
+                offset_y = height/2;
+                
+                // 
+                is_visible = true;
+            }
+
+            ImageShape imshape
+            {
+                // Takes a filename without folder and extension.
+                time action(string fn, time tstart, dur d=-0.001ms)
+                {
+                    image = stimuli_dir() + fn + ".png";
+                    offset_x = -(image_width / 2);
+                    offset_y = -(image_height / 2);
+                    imshape.start(tstart, d);
+                    return expected_start_time;
+                }
+            }
+        }
+
+        HorizontalLayout sel_buttons
+        {
+            init()
+            {
+                spacing = 20;
+                options = LAYOUT_EQUAL_WIDTH;
+            }
+
+            ButtonGadget b1
+            {
+                init()
+                {
+                    text = "1";
+                    font_family = TEST_PAGE_BUTTON_FONT_FAMILY;
+                    font_size = TEST_PAGE_BUTTON_FONT_SIZE;
+                    fill_pattern_color = TEST_PAGE_BUTTON_COLOR;
+                    text_color = TEST_PAGE_BUTTON_TEXT_COLOR;
+                }
+
+                activate()
+                {
+                    if (all_learn_items_presented())
+                        response.process_hit(S1_ITEM , event_time);
+                }
+            }
+            
+            ButtonGadget b2
+            {
+                init()
+                {
+                    text = "2";
+                    font_family = TEST_PAGE_BUTTON_FONT_FAMILY;
+                    font_size = TEST_PAGE_BUTTON_FONT_SIZE;
+                    fill_pattern_color = TEST_PAGE_BUTTON_COLOR;
+                    text_color = TEST_PAGE_BUTTON_TEXT_COLOR;
+                }
+
+                activate()
+                {
+                    if (all_learn_items_presented())
+                        response.process_hit(S2_ITEM , event_time);
+                }
+            }
+            
+            ButtonGadget b3
+            {
+                init()
+                {
+                    text = "3";
+                    font_family = TEST_PAGE_BUTTON_FONT_FAMILY;
+                    font_size = TEST_PAGE_BUTTON_FONT_SIZE;
+                    fill_pattern_color = TEST_PAGE_BUTTON_COLOR;
+                    text_color = TEST_PAGE_BUTTON_TEXT_COLOR;
+                }
+
+                activate()
+                {
+                    if (all_learn_items_presented())
+                        response.process_hit(S3_ITEM , event_time);
+                }
+            }
+            
+            ButtonGadget b4
+            {
+                init()
+                {
+                    text = "4";
+                    font_family = TEST_PAGE_BUTTON_FONT_FAMILY;
+                    font_size = TEST_PAGE_BUTTON_FONT_SIZE;
+                    fill_pattern_color = TEST_PAGE_BUTTON_COLOR;
+                    text_color = TEST_PAGE_BUTTON_TEXT_COLOR;
+                }
+
+                activate()
+                {
+                    if (all_learn_items_presented())
+                        response.process_hit(S4_ITEM , event_time);
+                }
+            }
+            
+            ButtonGadget b5
+            {
+                init()
+                {
+                    text = "5";
+                    font_family = TEST_PAGE_BUTTON_FONT_FAMILY;
+                    font_size = TEST_PAGE_BUTTON_FONT_SIZE;
+                    fill_pattern_color = TEST_PAGE_BUTTON_COLOR;
+                    text_color = TEST_PAGE_BUTTON_TEXT_COLOR;
+                }
+
+                activate()
+                {
+                    if (all_learn_items_presented())
+                        response.process_hit(S5_ITEM , event_time);
+                }
+            }
+            
+            ButtonGadget b6
+            {
+                init()
+                {
+                    text = "6";
+                    font_family = TEST_PAGE_BUTTON_FONT_FAMILY;
+                    font_size = TEST_PAGE_BUTTON_FONT_SIZE;
+                    fill_pattern_color = TEST_PAGE_BUTTON_COLOR;
+                    text_color = TEST_PAGE_BUTTON_TEXT_COLOR;
+                }
+
+                activate()
+                {
+                    if (all_learn_items_presented())
+                        response.process_hit(S6_ITEM , event_time);
+                }
+            }
+            
+            ButtonGadget b7
+            {
+                init()
+                {
+                    text = "7";
+                    font_family = TEST_PAGE_BUTTON_FONT_FAMILY;
+                    font_size = TEST_PAGE_BUTTON_FONT_SIZE;
+                    fill_pattern_color = TEST_PAGE_BUTTON_COLOR;
+                    text_color = TEST_PAGE_BUTTON_TEXT_COLOR;
+                }
+
+                activate()
+                {
+                    if (all_learn_items_presented())
+                        response.process_hit(S7_ITEM , event_time);
+                }
+            }
+
+            void clear_backgrounds()
+            {
+                b1.fill_pattern_color = TEST_PAGE_BUTTON_COLOR;
+                b2.fill_pattern_color = TEST_PAGE_BUTTON_COLOR;
+                b3.fill_pattern_color = TEST_PAGE_BUTTON_COLOR;
+                b4.fill_pattern_color = TEST_PAGE_BUTTON_COLOR;
+                b5.fill_pattern_color = TEST_PAGE_BUTTON_COLOR;
+                b6.fill_pattern_color = TEST_PAGE_BUTTON_COLOR;
+                b7.fill_pattern_color = TEST_PAGE_BUTTON_COLOR;
+            }
+
+            void highlight_button(int new_item)
+            {
+                color hl = rgbi:255/128/128;
+                if (new_item == 0) b1.fill_pattern_color = hl;
+                if (new_item == 1) b2.fill_pattern_color = hl;
+                if (new_item == 2) b3.fill_pattern_color = hl;
+                if (new_item == 3) b4.fill_pattern_color = hl;
+                if (new_item == 4) b5.fill_pattern_color = hl;
+                if (new_item == 5) b6.fill_pattern_color = hl;
+                if (new_item == 6) b7.fill_pattern_color = hl;
+            }
+        }
+
+        HorizontalLayout buttons
+        {
+            init()
+            {
+                spacing = 50;
+                options = LAYOUT_EQUAL_WIDTH;
+            }
+
+            ButtonGadget button_repeat
+            {
+                init()
+                {
+                    text = REPEAT_BUTTON_TEXT;
+                    font_family = TEST_PAGE_BUTTON_FONT_FAMILY;
+                    font_size = TEST_PAGE_BUTTON_FONT_SIZE;
+                    fill_pattern_color = TEST_PAGE_BUTTON_COLOR;
+                    text_color = TEST_PAGE_BUTTON_TEXT_COLOR;
+                    size = 150, 75;
+                }
+
+                on_event:activate()
+                {
+                    response.process_hit(REP_ITEM, event_time);
+                }
+            }
+
+            ButtonGadget button_next
+            {
+                init()
+                {
+                    text = NEXT_BUTTON_TEXT;
+                    font_family = TEST_PAGE_BUTTON_FONT_FAMILY;
+                    font_size = TEST_PAGE_BUTTON_FONT_SIZE;
+                    fill_pattern_color = TEST_PAGE_BUTTON_COLOR;
+                    text_color = TEST_PAGE_BUTTON_TEXT_COLOR;
+                    size = 150, 75;
+                }
+
+                on_event:activate()
+                {
+                    response.process_hit(NEXT_ITEM, event_time);
+                }
+            }
+
+            ButtonGadget button_finish
+            {
+                init()
+                {
+                    text = CONTINUE_BUTTON_TEXT;
+                    font_family = TEST_PAGE_BUTTON_FONT_FAMILY;
+                    font_size = TEST_PAGE_BUTTON_FONT_SIZE;
+                    fill_pattern_color = TEST_PAGE_BUTTON_COLOR;
+                    text_color = TEST_PAGE_BUTTON_TEXT_COLOR;
+                    size = 150, 75;
+                }
+
+                on_event:activate()
+                {
+                    response.process_hit(FINISH_ITEM, event_time);
+                }
+            }
+        }
+
+        void reset()
+        {
+            layout.canvas.imshape.is_visible = false;
+            layout.sel_buttons.clear_backgrounds();
+            full_abort();
+        }
+    }
+
+
+    SoundChain stimulus
+    {
+        // Sound source/producer object.
+        SoundFile clip {}
+
+        // Sound sink/consumer object.
+        SoundPlayback playback {}
+
+        time play(time t)
+        {
+            abort();
+
+            playback.device = sound_output_device;
+            clip.file = stimuli_dir() + pair.sound_fn + ".wav";
+
+            start(t);
+
+            return expected_start_time;
+        }
+    }
+
+    Response response
+    {
+        // Response data.
+        ResponseVal value;
+
+//        void clear()
+//        {
+//            value = -1;
+//        }
+
+        void process_hit(ResponseVal val, time t)
+        {
+            HitType validity = hit(t);
+
+            // Accept the first hit in the response interval and end the 
+            // response interval.
+            if (validity == HIT_VALID)
+            {
+                value = val;
+                ignore_remaining_hits();
+
+                // update presented items.
+                if (new_item >= 0 && new_item < presented.size)
+                    presented[new_item] = true;
+
+                // Update the next item.
+                if (val == REP_ITEM) {
+                    new_item = new_item;
+                }
+                else if (val == NEXT_ITEM) {
+                    new_item = new_item + 1;
+                    if (new_item >= learn_items.size)
+                        new_item = 0;
+                }
+                else if (val == S1_ITEM)
+                    new_item = 0; // one less because it is an index
+                else if (val == S2_ITEM)
+                    new_item = 1;
+                else if (val == S3_ITEM)
+                    new_item = 2;
+                else if (val == S4_ITEM)
+                    new_item = 3;
+                else if (val == S5_ITEM)
+                    new_item = 4;
+                else if (val == S6_ITEM)
+                    new_item = 5;
+                else if (val == S7_ITEM)
+                    new_item = 6;
+                else if (val == FINISH_ITEM)
+                    new_item = -1;
+                else
+                    println("Oops unexpected item in learning phase.");
+
+                next_item = val;
+                stop();
+            }
+            else if (validity == HIT_TOO_EARLY || validity == HIT_TOO_LATE)
+            {
+                // False alarm. Deal with this if desired.
+            }
+        }
+
+        on_event:finish()
+        {
+            done(CONTINUE);
+        }
+
+        on_event:message()
+        {
+            done(CONTINUE);
+        }
+    }
+
+    // Aborts any ongoing activity on this page and signals the initiator
+    // of the trial that we're done.
+    void done(int msgid)
+    {
+        // Just in case; abort presentation if still active.
+        layout.reset();
+        stimulus.abort();
+        layout.canvas.imshape.abort();
+        layout.canvas.full_abort();
+
+        signal_target(msgid);   // tell caller we're done
+        target = null;
+
+        control.clear_status();
+    }
+
+    //==========================================================================
+
+    // Performs preparatory work required before using this page.
+    void setup(int ntrials=-1, bool fb=false, bool pr=false)
+    {
+        test_page_overlay.setup(this);
+
+        // Show or hide prompt.
+        test_page_overlay.show_prompt(pr ? 
+            "are both words real words?" : "");
+
+        // Enable or disable the progress bar.
+        test_page_overlay.show_progress_bar(ntrials);   // disabled if < 0
+
+        // Enable or disable feedback.
+        test_page_overlay.enable_feedback(fb);          // disabled if false
+
+
+        // Enable button-box buttons 0 and 1 for resp. no(0) and yes(1).
+        control.target = this;
+        control.button_box.disable_buttons();
+
+        // Enable left buttons. 
+        control.button_box.enable_button(0, 0); 
+        control.button_box.enable_button(1, 0); 
+
+        // Enable right buttons.
+        control.button_box.enable_button(2, 1); 
+        control.button_box.enable_button(3, 1); 
+    }
+
+
+    // Performs cleaning up if necessary.
+    void cleanup()
+    {
+        test_page_overlay.cleanup();
+
+        control.button_box.disable_buttons();
+        control.target = null;
+    }
+
+
+    // Starts a trial.
+    void action(Object caller, time tref, int count=-1)
+    {
+        // Save the passed trial control parameters.
+        item = learn_items[new_item];
+        pair = get_stim_pair(item.pair_num);
+
+        // Show this page (if not yet done) and make tref the trial start time.
+        tref = test_window1.show_test_page(this, tref + INTERTRIAL_INTERVAL);
+
+        time picture_on = layout.canvas.imshape.action(pair.pic_fn, tref);
+
+        // Start target stimulus at prime offset + prime-target ISI.
+        time stimonset = stimulus.play(picture_on);
+
+        // Response interval starts at stimulus onset. Timeout after 
+        // RESPONSE_DURATION unless this duration is 0s or less.
+        response.start(stimonset, -1s);
+
+        // Update progress counter (if enabled).
+        test_page_overlay.update_progress_bar(count);
+
+        // Update status line on control window. Cleared in done() above.
+        control.set_status(
+            string(item.learn_id) + "  " + 
+            string(item.pair_num) + "  " + 
+            string(pair.pic_fn)   + "  " + 
+            string(pair.sound_fn)
+            );
+        
+        // highlight the active stimulus.
+        layout.sel_buttons.highlight_button(new_item);
+
+        if (all_learn_items_presented()) {
+            layout.buttons.button_finish.is_visible = true;
+        }
+        else {
+            layout.buttons.button_finish.is_visible = false;
+        }
+
+        // Remember who to signal when the trial is over.
+        target = caller;
+    }
+}

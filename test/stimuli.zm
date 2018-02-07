@@ -25,22 +25,23 @@ enum StimNum{
     S5,
     S6,
     S7,
+    STIM_SENTINAL // Keep this at the end.
 }
 
 // The names of the stimuli; the directory/folder and extension will be added
-// programmatically.
+// programmatically. These are not to be shuffled.
 string[..] sounds = {
-    "sound1",
-    "sound2",
-    "sound3",
-    "sound4",
-    "sound5",
-    "sound6",
-    "sound7"
+    "audio1",
+    "audio2",
+    "audio3",
+    "audio4",
+    "audio5",
+    "audio6",
+    "audio7"
 };
 
 // The names of the stimuli; the directory/folder and extension will be added
-// programmatically.
+// programmatically. These are not to be shuffled!!
 string[..] images = {
     "image1",
     "image2",
@@ -65,9 +66,19 @@ StimPair get_stim_pair(StimNum n)
     return pair;
 }
 
-record PracticeItem {
-    int     prac_id;    // id for tracking/sorting items in the output.
+record LearnItem {
+    int     learn_id;   // id for tracking/sorting items in the output.
     StimNum pair_num;   // The pair of stimuli selected.
+};
+
+LearnItem[..] learn_items = {
+    {1, S1},
+    {2, S2},
+    {3, S3},
+    {4, S4},
+    {5, S5},
+    {6, S6},
+    {7, S7},
 };
 
 // Item table record.
