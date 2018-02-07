@@ -13,7 +13,7 @@ enum MatchType {
 }
 
 /*
- * Used to select stimluli from the sounds and images array. Hence both
+ * Used to select stimuli from the sounds and images array. Hence both
  * arrays should have exactly the same number of items as there are 
  * members in enum StimNum.
  */
@@ -27,6 +27,27 @@ enum StimNum{
     S7,
     STIM_SENTINAL // Keep this at the end.
 }
+
+
+/*
+ * A Audio visual unit is a pair of an image and a ".wav" file.
+ *
+ * They are a unit, since they belong together during an experiment.
+ */
+record AudioVisualUnit {
+    string sound;   // The sound of a unit.
+    string image;   // The image of a unit.
+};
+
+AudioVisualUnit[..] units = {
+    {"audio1", "image1"},
+    {"audio2", "image2"},
+    {"audio3", "image3"},
+    {"audio4", "image4"},
+    {"audio5", "image5"},
+    {"audio6", "image6"},
+    {"audio7", "image7"}
+};
 
 // The names of the stimuli; the directory/folder and extension will be added
 // programmatically. These are not to be shuffled.
@@ -81,36 +102,64 @@ LearnItem[..] learn_items = {
     {7, S7},
 };
 
-// Item table record.
+
+/*
+ * Item table record. These items determine what audio is played and where
+ * which pictures are displayed.
+ *
+ * For the practice and test phase four items are presented.
+ * And a sound is played as display by the music note on the right.
+ * The audio corresponds uniquely to one of the four positions
+ *
+ * the screen looks a little like:
+ * _________________________________
+ * |   _________       _________   |
+ * |   |       |       |       |   |
+ * |   |   1   |       |   2   |   |
+ * |   |_______|       |_______|   |     |\
+ * |                               |     | \
+ * |                               |     |  \
+ * |   _________       _________   |   * |   \ Audio is played.
+ * |   |       |       |       |   |  ***|    |
+ * |   |   3   |       |   4   |   |   *    * |
+ * |   |_______|       |_______|   |       ***|
+ * |_______________________________|        *
+ *
+ */
 record TestItem
 {
-    int         id;             // item id
-    ItemType    type;           // item type
-    string      wordfn;         // stimulus word sound filename
-    string      prime;          // prime word
-}
+    int         id;         // item id
+    StimNum     audio;      // The audio played in the current trial.
+                            // This file should uniquely match one of the
+                            // four pictures below.
+    
+    int         correct;    // the number/button that should be chosen/pressed.
 
+    StimNum     pic1;       // Becomes the picture at position 1 see the
+                            // ascii art above.
+    StimNum     pic2;       // The picture of position 2
+    StimNum     pic3;       // The picture of position 3
+    StimNum     pic4;       // The picture of position 4
+}
 
 // Practice item table.
 //   index: item number
 TestItem[..] prac_items =
-{
-    {1,         NON_WORD,       "palve.wav",    "onion"},
-    {2,         UNRELATED,      "hot.wav",      "stapler"},
+{//  id   audio correct picture 1, 2,    3 and 4
+    {1,     S5,     4,      S1,   S7,   S6,     S5},
+    {2,     S7,     3,      S2,   S1,   S7,     S6},
+    {3,     S2,     2,      S3,   S2,   S1,     S7},
+    {4,     S4,     1,      S4,   S3,   S2,     S1},
+    {5,     S2,     4,      S5,   S4,   S3,     S2},
+    {6,     S4,     3,      S6,   S5,   S4,     S3},
+    {7,     S6,     2,      S7,   S6,   S5,     S4},
+    {8,     S1,     1,      S1,   S7,   S6,     S5},
 };
+
 
 
 // Test item table.
 //   index: item number
 TestItem[..] test_items =
 {
-    {1,         NON_WORD,       "slirque.wav",  "eyes"},
-    {2,         NON_WORD,       "crawse.wav",   "piano"},
-    {3,         NON_WORD,       "thwurp.wav",   "rabbit"},
-    {4,         NON_WORD,       "clem.wav",     "flower"},
-
-    {5,         RELATED,        "white.wav",    "snow"},
-    {6,         RELATED,        "travel.wav",   "suitcase"},
-    {7,         UNRELATED,      "letter.wav",   "garden"},
-    {8,         UNRELATED,      "clown.wav",    "forest"},
 };
