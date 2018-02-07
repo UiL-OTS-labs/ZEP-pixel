@@ -21,14 +21,16 @@ all participants get the same 7 pairs. The participants should be able to replay
 a given sound-picture pair. At the end 7 buttons appear, in order to replay
 every stimulus until they know the pairs.
 ## Phase 2 practice phase
-I a trial the following happens:
-The participants see 4 pictures and hear a sound after a ISI. One of the
-pictures should match the sound as they are a pair according the practice phase.
+In a trial the following happens:
+The participants see 4 pictures and
+hear a sound after a ISI. One of the pictures should match the sound as they
+are a pair according the practice phase.
 All trials are presented randomly and are self paced. The trial will only,
 advance to the next after the participants have responded. Before the trial
 advances to the next participants are presented feedback. The feedback
 comprises the marking of the correct response, since three of the pictures are
 wrong.
+
 Since reaction time is measured, participants respond with a BeexyBox, a button-
 box available from www.beexy.org
 ## Phase 3 test phase
