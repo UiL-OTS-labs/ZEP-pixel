@@ -18,59 +18,58 @@ Block task
         if (shuffle_test_items() != OK) terminate;
     }
 
-    Part instructions_learning
-    {
-        on_event:entry()
-        {
-//            pause_page.set_text_size(1000, 600);
-            pause_page.set_text(PRE_LEARN_INSTRUCTION, true);
-            pause_page.action(this);
-            control.button_box.enable_all_buttons(CONTINUE);
-        }
-    }
-
-
-    Block learning_block 
-    {
-        LearnItem        item;   // current item
-
-        on_event:entry()
-        {
-            // It is the user who ends this block. Not a fixed number of trials.
-            num_cycles = -1;
-
-            // Prepare test page: progress bar enabled,
-            // feedback and prompt disabled.
-            learn_page.setup(num_cycles, false, false);
-        }
-
-        on_event:exit()
-        {
-            learn_page.cleanup();
-        }
-
-        Trial trial
-        {
-            on_event:entry()
-            {
-                learn_page.action(
-                    this,
-                    reference_time,
-                    learning_block.cycle
-                    );
-            }
-
-            on_event:exit()
-            {
-                //LearnOutput output;
-                println("is_finished = " + learn_page.is_finished());
-                if (learn_page.is_finished()) {
-                    // set num_cycles to the current cycle to finish this block.
-                    learning_block.num_cycles = learning_block.cycle;
-                }
-            }
-        }
-    }
+//    Part instructions_learning
+//    {
+//        on_event:entry()
+//        {
+////            pause_page.set_text_size(1000, 600);
+//            pause_page.set_text(PRE_LEARN_INSTRUCTION, true);
+//            pause_page.action(this);
+//            control.button_box.enable_all_buttons(CONTINUE);
+//        }
+//    }
+//
+//    Block learning_block 
+//    {
+//        LearnItem        item;   // current item
+//
+//        on_event:entry()
+//        {
+//            // It is the user who ends this block. Not a fixed number of trials.
+//            num_cycles = -1;
+//
+//            // Prepare test page: progress bar enabled,
+//            // feedback and prompt disabled.
+//            learn_page.setup(num_cycles, false, false);
+//        }
+//
+//        on_event:exit()
+//        {
+//            learn_page.cleanup();
+//        }
+//
+//        Trial trial
+//        {
+//            on_event:entry()
+//            {
+//                learn_page.action(
+//                    this,
+//                    reference_time,
+//                    learning_block.cycle
+//                    );
+//            }
+//
+//            on_event:exit()
+//            {
+//                //LearnOutput output;
+//                println("is_finished = " + learn_page.is_finished());
+//                if (learn_page.is_finished()) {
+//                    // set num_cycles to the current cycle to finish this block.
+//                    learning_block.num_cycles = learning_block.cycle;
+//                }
+//            }
+//        }
+//    }
 
     Part
     {
