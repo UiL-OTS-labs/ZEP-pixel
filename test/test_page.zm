@@ -280,7 +280,7 @@ Page test_page
             {
                 value = val;
                 rt = int(reaction_time(0));
-                correct = val == item.correct;
+                correct = value == item.correct ? 1 : 0;
                 ignore_remaining_hits();
 
                 layout.canvas.visfeedback.action(item.correct, t + 250ms, 500ms);
@@ -295,8 +295,6 @@ Page test_page
 
         on_event:finish()
         {
-            correct = -1;
-
             layout.canvas.visfeedback.action(item.correct, event_time, 500ms);
         }
     }
