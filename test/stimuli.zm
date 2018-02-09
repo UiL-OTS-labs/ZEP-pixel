@@ -1,16 +1,31 @@
+/* This file defines the stimuli presented to the participants of the 
+ * pixel experiment.
+ */
 
-// Symbolic definition of item type.
-enum ItemType
-{
-    NON_WORD,                   // non-word
-    UNRELATED,                  // real word with unrelated prime
-    RELATED,                    // real word with semantically related prime
-}
+// The names of the stimuli; the directory/folder and extension will be added
+// programmatically. These are not to be shuffled.
+string[..] sounds = {
+    "audio1",   //S1
+    "audio2",   //S2
+    "audio3",   //S3
+    "audio4",   //S4
+    "audio5",   //S5
+    "audio6",   //S6
+    "audio7"    //S7
+};
 
-enum MatchType {
-    MATCH,      // 
-    MISMATCH    //
-}
+// The names of the stimuli; the directory/folder and extension will be added
+// programmatically. These are not to be shuffled!!
+string[..] images = {
+    "image1",   //S1
+    "image2",   //S2
+    "image3",   //S3
+    "image4",   //S4
+    "image5",   //S5
+    "image6",   //S6
+    "image7"    //S7
+};
+
 
 /*
  * Used to select stimuli from the sounds and images array. Hence both
@@ -18,7 +33,7 @@ enum MatchType {
  * members in enum StimNum.
  */
 enum StimNum{
-    S1 = 0,
+    S1 = 0,     // Corresponds with the first item of sounds or images
     S2,
     S3,
     S4,
@@ -27,51 +42,6 @@ enum StimNum{
     S7,
     STIM_SENTINAL // Keep this at the end.
 }
-
-
-/*
- * A Audio visual unit is a pair of an image and a ".wav" file.
- *
- * They are a unit, since they belong together during an experiment.
- */
-record AudioVisualUnit {
-    string sound;   // The sound of a unit.
-    string image;   // The image of a unit.
-};
-
-AudioVisualUnit[..] units = {
-    {"audio1", "image1"},
-    {"audio2", "image2"},
-    {"audio3", "image3"},
-    {"audio4", "image4"},
-    {"audio5", "image5"},
-    {"audio6", "image6"},
-    {"audio7", "image7"}
-};
-
-// The names of the stimuli; the directory/folder and extension will be added
-// programmatically. These are not to be shuffled.
-string[..] sounds = {
-    "audio1",
-    "audio2",
-    "audio3",
-    "audio4",
-    "audio5",
-    "audio6",
-    "audio7"
-};
-
-// The names of the stimuli; the directory/folder and extension will be added
-// programmatically. These are not to be shuffled!!
-string[..] images = {
-    "image1",
-    "image2",
-    "image3",
-    "image4",
-    "image5",
-    "image6",
-    "image7"
-};
 
 record StimPair {
     string sound_fn;    // Filename of the sound.
@@ -170,3 +140,9 @@ TestItem[..] test_items =
     {7,     S6,     2,      S7,   S6,   S5,     S4},
     {8,     S1,     1,      S1,   S7,   S6,     S5},
 };
+
+
+enum MatchType {
+    MATCH,      // 
+    MISMATCH    //
+}
