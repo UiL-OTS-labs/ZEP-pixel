@@ -1,0 +1,15 @@
+/*
+ * Implements shuffling of all to be shuffled items
+ */
+
+ // Shuffles nothing yet, to be implemented
+int shuffle_test_items()
+{
+    learn_items.shuffle(0, -1);
+    prac_items.shuffle(0, -1);
+    test_items.shuffle(0, -1);
+    discrimination_items.shuffle(0, -1);
+
+    return OK;
+}
+

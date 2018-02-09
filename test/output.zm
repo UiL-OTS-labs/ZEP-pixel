@@ -1,0 +1,166 @@
+
+const int LEARN_TABLE_ID    = 1;
+const int PRAC_TABLE_ID     = 2;
+const int TEST_TABLE_ID     = 3;
+const int DISCR_TABLE_ID    = 4;
+
+//------------------ Output of learning phase ---------------------------------
+record LearnOutput
+{
+    int         trialnum;
+    int         id;
+    StimNum     stimpair;
+    string      audio_fn;
+    string      pic_fn;
+}
+
+// learn output table
+LearnOutput[..] learn_output;
+
+// Appends one row of data to learn output table.
+void learn_output_append(LearnOutput data)
+{
+    learn_output.size = learn_output.size + 1;
+    learn_output[learn_output.size-1] = data;
+}
+
+// Writes test output table contents to CSV file and clears the table.
+void learn_output_save()
+{
+    // Append table to CSV file (create if non-existent). The filename format
+    // is: <dbname>/<dbnum>/<expname>/<phasename>/ses<sesid>-<tblnum>.csv
+    string fn = expdb.experiment.session.create_table(
+        namespace_name,
+        LEARN_TABLE_ID
+        );
+    learn_output.append(fn, namespace_name + ": learn results");
+    learn_output.size = 0;
+}
+
+
+//-----------------------------------------------------------------------------
+
+// Test output table record.
+record TestOutput
+{
+    int         trialnum;       // trial number
+    int         id;             // item id
+
+    StimNum     audio_id;       // S1 - S7
+    string      audio_fn;       // audio filename
+
+    int         correct_resp;   // the response that would be correct.
+
+    StimNum     im1_id;         // S1 - S7 on position 1;
+    StimNum     im2_id;         // S1 - S7
+    StimNum     im3_id;         // S1 - S7
+    StimNum     im4_id;         // S1 - S7
+
+    string      im1_fn;         // The filename on position 1
+    string      im2_fn;         // postion 2
+    string      im3_fn;         // postion 3
+    string      im4_fn;         // postion 4
+
+    int         value;          // response value: 1, 2, 3, 4
+    int         rt;             // response time [ms] or -9999 for no response.
+    int         correct;        // correct response: 0=no, 1=yes, -1=n.a.
+}
+
+//------------------ Output of practice phase ---------------------------------
+
+// practice output table
+TestOutput[..] practice_output;
+
+// Appends one row of data to practice output table.
+void practice_output_append(TestOutput data)
+{
+    practice_output.size = practice_output.size + 1;
+    practice_output[practice_output.size-1] = data;
+}
+
+// Writes test output table contents to CSV file and clears the table.
+void practice_output_save()
+{
+    // Append table to CSV file (create if non-existent). The filename format
+    // is: <dbname>/<dbnum>/<expname>/<phasename>/ses<sesid>-<tblnum>.csv
+    string fn = expdb.experiment.session.create_table(
+        namespace_name,
+        PRAC_TABLE_ID
+        );
+    practice_output.append(fn, namespace_name + ": practice results");
+    practice_output.size = 0;
+}
+
+//---------------------- Output of test phase ---------------------------------
+
+// Test output table.
+TestOutput[..] test_output;
+
+
+// Appends one row of data to test output table.
+void test_output_append(TestOutput data)
+{
+    test_output.size = test_output.size + 1;
+    test_output[test_output.size-1] = data;
+}
+
+
+// Writes test output table contents to CSV file and clears the table.
+void test_output_save()
+{
+    // Append table to CSV file (create if non-existent). The filename format
+    // is: <dbname>/<dbnum>/<expname>/<phasename>/ses<sesid>-<tblnum>.csv
+    string fn = expdb.experiment.session.create_table(
+        namespace_name,
+        TEST_TABLE_ID
+        );
+    test_output.append(fn, namespace_name + ": test results");
+    test_output.size = 0;
+}
+
+//---------------------- Output of discrimination phase -----------------------
+
+// DiscriminationOutput
+
+record DiscriminationOutput {
+    int         trialnum;       // trial number
+    int         id;             // item id
+
+    StimNum     audio_id;       // S1 - S7
+    string      audio_fn;       // audio filename
+
+    MatchType   correct_resp;   // the response that would be correct.
+
+    StimNum     im_id;          // S1 - S7 
+    string      im_fn;          // The filename on position 1
+
+    MatchType   value;          // response value: 1, 2, 3, 4
+    int         rt;             // response time [ms] or -9999 for no response.
+    int         correct;        // correct response: 0=no, 1=yes, -1=n.a.
+};
+
+// Discrimination output table.
+DiscriminationOutput[..] discrimination_output;
+
+
+// Appends one row of data to discrimination output table.
+void discrimination_output_append(DiscriminationOutput data)
+{
+    discrimination_output.size = discrimination_output.size + 1;
+    discrimination_output[discrimination_output.size-1] = data;
+}
+
+
+// Writes discrimination output table contents to CSV file and clears the table.
+void discrimination_output_save()
+{
+    // Append table to CSV file (create if non-existent). The filename format
+    // is: <dbname>/<dbnum>/<expname>/<phasename>/ses<sesid>-<tblnum>.csv
+    string fn = expdb.experiment.session.create_table(
+        namespace_name,
+        DISCR_TABLE_ID
+        );
+    discrimination_output.append(fn, namespace_name + ": discrimination results");
+    discrimination_output.size = 0;
+}
+

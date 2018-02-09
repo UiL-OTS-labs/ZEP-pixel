@@ -1,0 +1,193 @@
+/* This file defines the stimuli presented to the participants of the 
+ * pixel experiment.
+ */
+
+
+//--------------stimuli used throughout the experiment ------------------------
+
+// The names of the stimuli; the directory/folder and extension will be added
+// programmatically. These are not to be shuffled.
+string[..] sounds = {
+    "audio1",   //S1
+    "audio2",   //S2
+    "audio3",   //S3
+    "audio4",   //S4
+    "audio5",   //S5
+    "audio6",   //S6
+    "audio7"    //S7
+};
+
+// The names of the stimuli; the directory/folder and extension will be added
+// programmatically. These are not to be shuffled!!
+string[..] images = {
+    "image1",   //S1
+    "image2",   //S2
+    "image3",   //S3
+    "image4",   //S4
+    "image5",   //S5
+    "image6",   //S6
+    "image7"    //S7
+};
+
+
+/*
+ * Used to select stimuli from the sounds and images array. Hence both
+ * arrays should have exactly the same number of items as there are 
+ * members in enum StimNum.
+ */
+enum StimNum{
+    S1 = 0,     // Corresponds with the first item of sounds or images
+    S2,
+    S3,
+    S4,
+    S5,
+    S6,
+    S7,
+    STIM_SENTINAL // Keep this at the end.
+}
+
+record StimPair {
+    string sound_fn;    // Filename of the sound.
+    string pic_fn;      // Filename of the picture.
+};
+
+// Returns a stimulus pair
+StimPair get_stim_pair(StimNum n)
+{
+    StimPair pair;
+    pair.sound_fn   = sounds[n];
+    pair.pic_fn     = images[n];
+    return pair;
+}
+
+
+
+//-------------------- Stimuli for the learning phase  ------------------------
+
+
+record LearnItem {
+    int     learn_id;   // id for tracking/sorting items in the output.
+    StimNum pair_num;   // The pair of stimuli selected.
+};
+
+LearnItem[..] learn_items = {
+    {1, S1},
+    {2, S2},
+    {3, S3},
+    {4, S4},
+    {5, S5},
+    {6, S6},
+    {7, S7},
+};
+
+
+//--------------- Stimuli for the practice and test phase ---------------------
+
+
+/*
+ * TestItem record. These items determine what audio is played and where
+ * which pictures are displayed and what is the appropriate response.
+ *
+ * For the practice and test phase four items are presented.
+ * And a sound is played as display by the music note on the right.
+ * The audio corresponds uniquely to one of the four positions
+ *
+ * The screen looks a little like:
+ * _________________________________
+ * |   _________       _________   |
+ * |   |       |       |       |   |
+ * |   |   1   |       |   2   |   |
+ * |   |_______|       |_______|   |     |\
+ * |                               |     | \
+ * |                               |     |  \
+ * |   _________       _________   |   * |   \  Audio is played.
+ * |   |       |       |       |   |  ***|    |
+ * |   |   3   |       |   4   |   |   *      |
+ * |   |_______|       |_______|   |          |
+ * |_______________________________|        * |
+ *                                         ***|
+ *                                          *    
+ */
+record TestItem
+{
+    int         id;         // item id
+    StimNum     audio;      // The audio played in the current trial.
+                            // This file should uniquely match one of the
+                            // four pictures below.
+    
+    int         correct;    // the number/button that should be chosen/pressed.
+
+    StimNum     pic1;       // Becomes the picture at position 1 see the
+                            // ascii art above.
+    StimNum     pic2;       // The picture of position 2
+    StimNum     pic3;       // The picture of position 3
+    StimNum     pic4;       // The picture of position 4
+}
+
+// Practice item table.
+//   index: item number
+TestItem[..] prac_items =
+{//  id   audio correct picture 1, 2,    3 and 4
+    {1,     S5,     4,      S1,   S7,   S6,     S5},
+    {2,     S7,     3,      S2,   S1,   S7,     S6},
+    {3,     S2,     2,      S3,   S2,   S1,     S7},
+    {4,     S4,     1,      S4,   S3,   S2,     S1},
+    {5,     S2,     4,      S5,   S4,   S3,     S2},
+    {6,     S4,     3,      S6,   S5,   S4,     S3},
+    {7,     S6,     2,      S7,   S6,   S5,     S4},
+    {8,     S1,     1,      S1,   S7,   S6,     S5},
+};
+
+// Test item table.
+//   index: item number
+TestItem[..] test_items =
+{
+    {1,     S5,     4,      S1,   S7,   S6,     S5},
+    {2,     S7,     3,      S2,   S1,   S7,     S6},
+    {3,     S2,     2,      S3,   S2,   S1,     S7},
+    {4,     S4,     1,      S4,   S3,   S2,     S1},
+    {5,     S2,     4,      S5,   S4,   S3,     S2},
+    {6,     S4,     3,      S6,   S5,   S4,     S3},
+    {7,     S6,     2,      S7,   S6,   S5,     S4},
+    {8,     S1,     1,      S1,   S7,   S6,     S5},
+};
+
+
+//---------------- Stimuli for the discrimination phase -----------------------
+
+enum MatchType {
+    MATCH,      // Visual and auditory stimuli match (they are a pair/unit)
+    MISMATCH,   // The two stimuli do not belong together
+    NO_HIT      // The participant didn't respond.
+};
+
+record DiscriminationItem {
+    int         id;         // item id
+
+    StimNum     audio;      // The audio played in the current trial.
+    StimNum     pic;        // The picture
+    
+    MatchType   correct;    // Whether the response should be MATCH or MISMATCH
+};
+
+DiscriminationItem[..] discrimination_items = {
+
+    // Matching items 
+    {1, S1, S1, MATCH},
+    {2, S2, S2, MATCH},
+    {3, S3, S3, MATCH},
+    {4, S4, S4, MATCH},
+    {5, S5, S5, MATCH},
+    {6, S6, S6, MATCH},
+    {7, S7, S7, MATCH},
+
+    // MisMatching items 
+    {1, S1, S7, MISMATCH},
+    {2, S2, S6, MISMATCH},
+    {3, S3, S5, MISMATCH},
+    {4, S4, S3, MISMATCH},
+    {5, S5, S4, MISMATCH},
+    {6, S6, S2, MISMATCH},
+    {7, S7, S1, MISMATCH}
+};
+

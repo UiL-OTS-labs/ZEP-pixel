@@ -1,0 +1,349 @@
+
+//requires 1.14;
+
+import instructions;
+import defs;
+import stimuli;
+import shuffle;
+import output;
+import test_page;
+import learn_page;
+import discrimination_page;
+
+
+Block task
+{
+    on_event:entry()
+    {
+        // Shuffle everything in the test.
+        if (shuffle_test_items() != OK) terminate;
+    }
+
+    Part instructions_learning
+    {
+        on_event:entry()
+        {
+//            pause_page.set_text_size(1000, 600);
+            pause_page.set_text(PRE_LEARN_INSTRUCTION, true);
+            pause_page.action(this);
+            control.button_box.enable_all_buttons(CONTINUE);
+        }
+    }
+
+    Block learning_block 
+    {
+        LearnItem        item;   // current item
+
+        on_event:entry()
+        {
+            // It is the user who ends this block. Not a fixed number of trials.
+            num_cycles = -1;
+
+            // Prepare test page: progress bar enabled,
+            // feedback and prompt disabled.
+            learn_page.setup(num_cycles, false, false);
+        }
+
+        on_event:exit()
+        {
+            learn_page.cleanup();
+            learn_output_save();
+        }
+
+        Trial trial
+        {
+            on_event:entry()
+            {
+                learn_page.action(
+                    this,
+                    reference_time,
+                    learning_block.cycle
+                    );
+            }
+
+            on_event:exit()
+            {
+                LearnOutput output;
+
+                output.trialnum = learning_block.cycle;
+                output.id       = learn_page.item.learn_id;
+                output.stimpair = learn_page.item.pair_num;
+                output.audio_fn = sounds[output.stimpair];
+                output.pic_fn   = images[output.stimpair];
+
+                learn_output_append(output);
+
+                println("is_finished = " + learn_page.is_finished());
+                if (learn_page.is_finished()) {
+                    // set num_cycles to the current cycle to finish this block.
+                    learning_block.num_cycles = learning_block.cycle;
+                }
+            }
+        }
+    }
+
+    Part
+    {
+        on_event:entry()
+        {
+            blank_page.action_auto(this, 500ms);
+        }
+    }
+
+    Part instructions_practice_phase
+    {
+        on_event:entry()
+        {
+//            pause_page.set_text_size(1000, 600);
+            pause_page.set_text(PRE_PRAC_INSTRUCTION, true);
+            pause_page.action(this);
+            control.button_box.enable_all_buttons(CONTINUE);
+        }
+    }
+    
+    Part
+    {
+        on_event:entry()
+        {
+            blank_page.action_auto(this, 500ms);
+        }
+    }
+
+    Block practice_block 
+    {
+        TestItem        item;   // current item
+
+        on_event:entry()
+        {
+            // It is the user who ends this block. Not a fixed number of trials.
+            num_cycles = prac_items.size;
+
+            // Prepare test page: progress bar enabled,
+            // feedback enables
+            // prompt disabled.
+            test_page.setup(num_cycles, true, false);
+        }
+
+        on_event:exit()
+        {
+            test_page.cleanup();
+            practice_output_save();
+        }
+
+        Trial trial
+        {
+            on_event:entry()
+            {
+                item = prac_items[practice_block.cycle];
+                test_page.action(
+                    this,
+                    item,
+                    reference_time,
+                    practice_block.cycle
+                    );
+            }
+
+            on_event:exit()
+            {
+                TestOutput output;
+                output.trialnum     = practice_block.cycle;
+                output.id           = item.id;
+                output.audio_id     = item.audio;
+                output.audio_fn     = sounds[item.audio];
+                output.correct_resp = item.correct;
+                output.im1_id       = item.pic1;
+                output.im2_id       = item.pic2;
+                output.im3_id       = item.pic3;
+                output.im4_id       = item.pic4;
+                output.im1_fn       = images[item.pic1];
+                output.im2_fn       = images[item.pic2];
+                output.im3_fn       = images[item.pic3];
+                output.im4_fn       = images[item.pic4];
+                output.value        = test_page.response.value;
+                output.rt           = test_page.response.rt;
+                output.correct      = test_page.response.correct;
+
+                practice_output_append(output);
+            }
+        }
+    }
+
+    Part
+    {
+        on_event:entry()
+        {
+            blank_page.action_auto(this, 500ms);
+        }
+    }
+
+    Part pause
+    {
+        on_event:entry()
+        {
+            pause_page.set_text(PRE_TEST_INSTRUCTION, true);
+            pause_page.action(this);
+            control.button_box.enable_all_buttons(CONTINUE);
+        }
+    }
+
+    Part
+    {
+        on_event:entry()
+        {
+            blank_page.action_auto(this, 500ms);
+        }
+    }
+
+    Block test_block 
+    {
+        TestItem        item;   // current item
+
+        on_event:entry()
+        {
+            // It is the user who ends this block. Not a fixed number of trials.
+            num_cycles = test_items.size;
+
+            // Prepare test page: progress bar enabled,
+            // feedback enables
+            // prompt disabled.
+            test_page.setup(num_cycles, false, false);
+        }
+
+        on_event:exit()
+        {
+            test_page.cleanup();
+            test_output_save();
+        }
+
+        Trial trial
+        {
+            on_event:entry()
+            {
+                item = test_items[test_block.cycle];
+                test_page.action(
+                    this,
+                    item,
+                    reference_time,
+                    test_block.cycle
+                    );
+            }
+
+            on_event:exit()
+            {
+                TestOutput output;
+                output.trialnum     = test_block.cycle;
+                output.id           = item.id;
+                output.audio_id     = item.audio;
+                output.audio_fn     = sounds[item.audio];
+                output.correct_resp = item.correct;
+                output.im1_id       = item.pic1;
+                output.im2_id       = item.pic2;
+                output.im3_id       = item.pic3;
+                output.im4_id       = item.pic4;
+                output.im1_fn       = images[item.pic1];
+                output.im2_fn       = images[item.pic2];
+                output.im3_fn       = images[item.pic3];
+                output.im4_fn       = images[item.pic4];
+                output.value        = test_page.response.value;
+                output.rt           = test_page.response.rt;
+                output.correct      = test_page.response.correct;
+
+                test_output_append(output);
+            }
+        }
+    }
+    
+    Part
+    {
+        on_event:entry()
+        {
+            blank_page.action_auto(this, 500ms);
+        }
+    }
+
+    Part pre_discrimination_pause
+    {
+        on_event:entry()
+        {
+            pause_page.set_text(PRE_DISCR_INSTRUCTION, true);
+            pause_page.action(this);
+            control.button_box.enable_all_buttons(CONTINUE);
+        }
+    }
+
+    Part
+    {
+        on_event:entry()
+        {
+            blank_page.action_auto(this, 500ms);
+        }
+    }
+
+    Block discrimination_block 
+    {
+        DiscriminationItem        item;   // current item
+
+        on_event:entry()
+        {
+            // It is the user who ends this block. Not a fixed number of trials.
+            num_cycles = discrimination_items.size;
+
+            // Prepare discrimination page: progress bar enabled,
+            // prompt disabled.
+            discrimination_page.setup(num_cycles, false);
+        }
+
+        on_event:exit()
+        {
+            discrimination_page.cleanup();
+            discrimination_output_save();
+        }
+
+        Trial trial
+        {
+            on_event:entry()
+            {
+                item = discrimination_items[discrimination_block.cycle];
+                discrimination_page.action(
+                    this,
+                    item,
+                    reference_time,
+                    discrimination_block.cycle
+                    );
+            }
+
+            on_event:exit()
+            {
+                DiscriminationOutput output;
+                output.trialnum     = discrimination_block.cycle;
+                output.id           = item.id;
+                output.audio_id     = item.audio;
+                output.audio_fn     = sounds[item.audio];
+                output.correct_resp = item.correct;
+                output.im_id        = item.pic;
+                output.im_fn        = images[item.pic];
+                output.value        = discrimination_page.response.value;
+                output.rt           = discrimination_page.response.rt;
+                output.correct      = discrimination_page.response.correct;
+
+                discrimination_output_append(output);
+            }
+        }
+    }
+
+    Part
+    {
+        on_event:entry()
+        {
+            blank_page.action_auto(this, 500ms);
+        }
+    }
+}
+
+
+void action(Part caller)
+{
+    // Activate the task. When the task is done, the registered caller
+    // (c.q. the main experiment object) will automatically be signaled.
+    task.enter(caller);
+}

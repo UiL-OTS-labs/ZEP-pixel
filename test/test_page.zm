@@ -1,0 +1,401 @@
+
+
+import std_sound_output_device;
+
+real OFFSET = 200;
+
+/*
+ * Default offset
+ */
+record DefOffset {
+    real x_offset;
+    real y_offset;
+};
+
+Page test_page
+{
+    TestItem    item;           // trial control parameters
+    bool        feedback = false;
+
+
+    init()
+    {
+        fill_pattern_color = TEST_PAGE_COLOR;
+    }
+
+    on_event:key_press()
+    { 
+        // It is possible to respond with a keyboard, but it is much
+        // better to use a BeexyBox.
+        if (input_key == '1' || input_key == 'a')
+            response.process_hit(1, event_time);
+        else if (input_key == '2' || input_key == 'k')
+            response.process_hit(2, event_time);
+        else if (input_key == '3' || input_key == 'z')
+            response.process_hit(3, event_time);
+        else if (input_key == '4' || input_key == 'm')
+            response.process_hit(4, event_time);
+        else
+            handle_special_key(this, input_key, input_modifiers);
+    }
+
+    on_event:message()
+    {
+        // Process button-box message. See setup() below.
+        response.process_hit(message_arg, event_time);
+    }
+
+    VerticalLayout layout
+    {
+        init()
+        {
+            spacing = 50;
+            height = 0;     // 0 means as large as possible
+        }
+
+        CanvasGadget canvas
+        {
+            init()
+            {
+                fill_pattern_color = TEST_PAGE_STIMULUS_COLOR;
+                size = 800, 800;
+
+                // Place origin of the of the canvas in the center.
+                offset_x = width / 2;
+                offset_y = height / 2;
+            }
+
+            CrossShape fixation
+            {
+                init()
+                {
+                    radius = 15;
+                    line_width = 5;
+                    line_pattern_color = color:crimson;
+                }
+            }
+            
+            RectangleShape visfeedback
+            {
+                init ()
+                {
+                    fill_pattern_color = rgbi:255/255/255/128;
+                    width = 350;
+                    height= 350;
+                }
+
+                finish()
+                {
+                    done(CONTINUE);
+                }
+
+                time action(int pos, time tstart, dur d)
+                {
+                    if (test_page.feedback) // green
+                        fill_pattern_color = color:green;
+                    else // fully transparent.
+                        fill_pattern_color = rgbi:0/0/0/0;
+
+                    DefOffset offset;
+                    if (pos == 1)       offset = im1.offset;
+                    else if (pos == 2)  offset = im2.offset;
+                    else if (pos == 3)  offset = im3.offset;
+                    else if (pos == 4)  offset = im4.offset;
+                    else {
+                        println("Whoopsie, invalid pos in visfeedback::action");
+                    }
+
+                    offset_x = offset.x_offset - width/2;
+                    offset_y = offset.y_offset - height/2;
+
+                    start(tstart, d);
+                    return expected_finish_time;
+                }
+            }
+
+            ImageShape im1
+            {
+                DefOffset offset;
+
+                init()
+                {
+                    offset.x_offset = -OFFSET;
+                    offset.y_offset = -OFFSET;
+                }
+
+                time action(string fn, time tstart, dur d=-0.001ms)
+                {
+                    image = stimuli_dir() + fn + ".png";
+
+                    offset_x = offset.x_offset - image_width  / 2;
+                    offset_y = offset.y_offset - image_height / 2;
+                    im1.start(tstart, d);
+
+                    return expected_start_time;
+                }
+            }
+            
+            ImageShape im2
+            {
+                DefOffset offset;
+
+                init()
+                {
+                    offset.x_offset = OFFSET;
+                    offset.y_offset = -OFFSET;
+                }
+
+                time action(string fn, time tstart, dur d=-0.001ms)
+                {
+                    image = stimuli_dir() + fn + ".png";
+
+                    offset_x = offset.x_offset - image_width  / 2;
+                    offset_y = offset.y_offset - image_height / 2;
+                    im2.start(tstart, d);
+
+                    return expected_start_time;
+                }
+            }
+            
+            ImageShape im3
+            {
+                DefOffset offset;
+
+                init()
+                {
+                    offset.x_offset = -OFFSET;
+                    offset.y_offset = OFFSET;
+                }
+
+                time action(string fn, time tstart, dur d=-0.001ms)
+                {
+                    image = stimuli_dir() + fn + ".png";
+
+                    offset_x = offset.x_offset - image_width  / 2;
+                    offset_y = offset.y_offset - image_height / 2;
+                    im3.start(tstart, d);
+
+                    return expected_start_time;
+                }
+            }
+            
+            ImageShape im4
+            {
+                DefOffset offset;
+
+                init()
+                {
+                    offset.x_offset = OFFSET;
+                    offset.y_offset = OFFSET;
+                }
+
+                time action(string fn, time tstart, dur d=-0.001ms)
+                {
+                    image = stimuli_dir() + fn + ".png";
+
+                    offset_x = offset.x_offset - image_width  / 2;
+                    offset_y = offset.y_offset - image_height / 2;
+                    im4.start(tstart, d);
+
+                    return expected_start_time;
+                }
+            }
+
+        }
+
+        time start_fixation(time t, dur d)
+        {
+            layout.canvas.fixation.start(t, d);
+            return layout.canvas.fixation.expected_finish_time;
+        }
+
+        time start_images(time t, dur d)
+        {
+            string fn1 = images[item.pic1];
+            string fn2 = images[item.pic2];
+            string fn3 = images[item.pic3];
+            string fn4 = images[item.pic4];
+
+            layout.canvas.im1.action(fn1, t, d);
+            layout.canvas.im2.action(fn2, t, d);
+            layout.canvas.im3.action(fn3, t, d);
+            layout.canvas.im4.action(fn4, t, d);
+
+            return layout.canvas.im1.expected_start_time;
+        }
+
+        void reset()
+        {
+            full_abort();
+            
+            layout.canvas.im1.is_visible = false;
+            layout.canvas.im2.is_visible = false;
+            layout.canvas.im3.is_visible = false;
+            layout.canvas.im4.is_visible = false;
+        }
+    }
+
+    SoundChain stimulus
+    {
+        // Sound source/producer object.
+        SoundFile clip {}
+
+        // Sound sink/consumer object.
+        SoundPlayback playback {}
+
+        time play(time t, string fn)
+        {
+            abort();
+
+            playback.device = sound_output_device;
+            clip.file = stimuli_dir() + fn + ".wav";
+
+            start(t);
+
+            return expected_start_time;
+        }
+    }
+
+    Response response
+    {
+        // Response data.
+        int     value;          // response value: 1, 2, 3 or 4
+        int     rt;             // response time [ms]
+        int     correct;        // correct response: 0=no, 1=yes, -1=n.a.
+
+        void clear()
+        {
+            value = -1;
+            rt = -9999;
+            correct = -1;
+        }
+
+        void process_hit(int val, time t)
+        {
+            HitType validity = hit(t);
+
+            // Accept the first hit in the response interval and end the 
+            // response interval.
+            if (validity == HIT_VALID)
+            {
+                value = val;
+                rt = int(reaction_time(0));
+                correct = value == item.correct ? 1 : 0;
+                ignore_remaining_hits();
+
+                layout.canvas.visfeedback.action(item.correct, t + 250ms, 500ms);
+
+                stop();
+            }
+            else if (validity == HIT_TOO_EARLY || validity == HIT_TOO_LATE)
+            {
+                // False alarm. Deal with this if desired.
+            }
+        }
+
+        on_event:finish()
+        {
+            layout.canvas.visfeedback.action(item.correct, event_time, 500ms);
+        }
+    }
+
+    // Aborts any ongoing activity on this page and signals the initiator
+    // of the trial that we're done.
+    void done(int msgid)
+    {
+        // Just in case; abort presentation if still active.
+        layout.reset();
+        stimulus.abort();
+
+        signal_target(msgid);   // tell caller we're done
+        target = null;
+
+        control.clear_status();
+    }
+
+    //==========================================================================
+
+    // Performs preparatory work required before using this page.
+    void setup(int ntrials=-1, bool fb=false, bool pr=false)
+    {
+        test_page_overlay.setup(this);
+
+        // Show or hide prompt.
+        test_page_overlay.show_prompt(pr ? 
+            "are both words real words?" : "");
+
+        // Enable or disable the progress bar.
+        test_page_overlay.show_progress_bar(ntrials);   // disabled if < 0
+
+        // Enable or disable feedback. (We don't use the overlay)
+        feedback = fb;
+
+        // Enable button-box buttons 0 and 1 for resp. no(0) and yes(1).
+        control.target = this;
+        control.button_box.disable_buttons();
+
+        control.button_box.enable_button(0, 1); // button 0 corresponds to pic1
+        control.button_box.enable_button(1, 3); // button 1 corresponds to pic3
+        control.button_box.enable_button(2, 4); // button 2 corresponds to pic4
+        control.button_box.enable_button(3, 2); // button 3 corresponds to pic2
+    }
+
+    // Performs cleaning up if necessary.
+    void cleanup()
+    {
+        test_page_overlay.cleanup();
+
+        control.button_box.disable_buttons();
+        control.target = null;
+    }
+
+    // Starts a trial.
+    void action(
+        Object caller,
+        TestItem it,
+        time tref,
+        int count=-1
+        )
+    {
+        // Save the passed trial control parameters.
+        item = it;
+
+        // Show this page (if not yet done) and make tref the trial start time.
+        tref = test_window1.show_test_page(this, tref + INTERTRIAL_INTERVAL);
+
+        // Reset response data.
+        response.clear();
+
+        time fixoffset = layout.start_fixation(
+            tref + INTERTRIAL_INTERVAL,
+            FIXATION_DURATION);
+
+        //start the four images
+        time im_onset = layout.start_images(fixoffset, -1ms);
+
+        // Start target stimulus at fixation offset
+        string audiofn = sounds[item.audio];
+        time stimonset = stimulus.play(im_onset, audiofn);
+
+        // Response interval starts at stimulus onset. Timeout after 
+        // RESPONSE_DURATION unless this duration is 0s or less.
+        response.start(stimonset, RESPONSE_DURATION);
+
+        // Update progress counter (if enabled).
+        test_page_overlay.update_progress_bar(count);
+
+        // Update status line on control window. Cleared in done() above.
+        control.set_status(
+            string(item.id)     + "  " + 
+            string(item.audio)  + "  " + 
+            string(item.correct)+ "  " +
+            string(item.pic1)   + "  " +
+            string(item.pic2)   + "  " +
+            string(item.pic3)   + "  " +
+            string(item.pic4)
+            );
+
+        // Remember who to signal when the trial is over.
+        target = caller;
+    }
+}

@@ -3,3 +3,6 @@
 
 #vim temporary files
 **.sw?
+
+#don't store output in git
+pixel*.csv
