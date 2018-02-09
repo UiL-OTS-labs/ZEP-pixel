@@ -1,13 +1,20 @@
 
-
+record LearnOutput
+{
+    int         trialnum;
+    int         id;
+    StimNum     stimpair;
+    string      audio_fn;
+    string      pic_fn;
+}
 
 
 // Test output table record.
 record TestOutput
 {
     int         trialnum;       // trial number
-
     int         id;             // item id
+
     ItemType    type;           // item type
     string      wordfn;         // stimulus word sound filename
     string      prime;          // prime word
@@ -17,6 +24,8 @@ record TestOutput
     int         correct;        // correct response: 0=no, 1=yes, -1=n.a.
 }
 
+// practice output table
+TestOutput[..] practice_output;
 
 // Test output table.
 TestOutput[..] test_output;
