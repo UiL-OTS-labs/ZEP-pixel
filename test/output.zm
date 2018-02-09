@@ -1,4 +1,9 @@
 
+const int LEARN_TABLE_ID    = 1;
+const int PRAC_TABLE_ID     = 2;
+const int TEST_TABLE_ID     = 3;
+const int DISCR_TABLE_ID    = 4;
+
 record LearnOutput
 {
     int         trialnum;
@@ -15,23 +20,55 @@ record TestOutput
     int         trialnum;       // trial number
     int         id;             // item id
 
-    ItemType    type;           // item type
-    string      wordfn;         // stimulus word sound filename
-    string      prime;          // prime word
+    StimNum     audio_id;       // S1 - S7
+    string      audio_fn;       // audio filename
 
-    int         value;          // response value: 0=no, 1=yes, -1=timeout
-    int         rt;             // response time [ms]
+    int         correct_resp;   // the response that would be correct.
+
+    StimNum     im1_id;         // S1 - S7 on position 1;
+    StimNum     im2_id;         // S1 - S7
+    StimNum     im3_id;         // S1 - S7
+    StimNum     im4_id;         // S1 - S7
+
+    string      im1_fn;         // The filename on position 1
+    string      im2_fn;         // postion 2
+    string      im3_fn;         // postion 3
+    string      im4_fn;         // postion 4
+
+    int         value;          // response value: 1, 2, 3, 4
+    int         rt;             // response time [ms] or -9999 for no response.
     int         correct;        // correct response: 0=no, 1=yes, -1=n.a.
 }
+
+//------------------ Output of practice phase ---------------------------------
 
 // practice output table
 TestOutput[..] practice_output;
 
+// Appends one row of data to practice output table.
+void practice_output_append(TestOutput data)
+{
+    practice_output.size = practice_output.size + 1;
+    practice_output[practice_output.size-1] = data;
+}
+
+// Writes test output table contents to CSV file and clears the table.
+void practice_output_save()
+{
+    // Append table to CSV file (create if non-existent). The filename format
+    // is: <dbname>/<dbnum>/<expname>/<phasename>/ses<sesid>-<tblnum>.csv
+    string fn = expdb.experiment.session.create_table(
+        namespace_name,
+        PRAC_TABLE_ID
+        );
+    practice_output.append(fn, namespace_name + ": practice results");
+    practice_output.size = 0;
+}
+
+//---------------------- Output of test phase ---------------------------------
+
 // Test output table.
 TestOutput[..] test_output;
-
-
-//------------------------------------------------------------------------------
 
 
 // Appends one row of data to test output table.
@@ -47,7 +84,10 @@ void test_output_save()
 {
     // Append table to CSV file (create if non-existent). The filename format
     // is: <dbname>/<dbnum>/<expname>/<phasename>/ses<sesid>-<tblnum>.csv
-    string fn = expdb.experiment.session.create_table(namespace_name, 1);
+    string fn = expdb.experiment.session.create_table(
+        namespace_name,
+        TEST_TABLE_ID
+        );
     test_output.append(fn, namespace_name + ": test results");
     test_output.size = 0;
 }

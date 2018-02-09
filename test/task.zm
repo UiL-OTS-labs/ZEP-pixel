@@ -116,6 +116,7 @@ Block task
         on_event:exit()
         {
             test_page.cleanup();
+            practice_output_save();
         }
 
         Trial trial
@@ -134,7 +135,24 @@ Block task
             on_event:exit()
             {
                 TestOutput output;
-                // TODO 
+                output.trialnum     = practice_block.cycle;
+                output.id           = item.id;
+                output.audio_id     = item.audio;
+                output.audio_fn     = sounds[item.audio];
+                output.correct_resp = item.correct;
+                output.im1_id       = item.pic1;
+                output.im2_id       = item.pic2;
+                output.im3_id       = item.pic3;
+                output.im4_id       = item.pic4;
+                output.im1_fn       = images[item.pic1];
+                output.im2_fn       = images[item.pic2];
+                output.im3_fn       = images[item.pic3];
+                output.im4_fn       = images[item.pic4];
+                output.value        = test_page.response.value;
+                output.rt           = test_page.response.rt;
+                output.correct      = test_page.response.correct;
+
+                practice_output_append(output);
             }
         }
     }
@@ -183,6 +201,7 @@ Block task
         on_event:exit()
         {
             test_page.cleanup();
+            test_output_save();
         }
 
         Trial trial
@@ -201,13 +220,27 @@ Block task
             on_event:exit()
             {
                 TestOutput output;
-                // TODO 
+                output.trialnum     = test_block.cycle;
+                output.id           = item.id;
+                output.audio_id     = item.audio;
+                output.audio_fn     = sounds[item.audio];
+                output.correct_resp = item.correct;
+                output.im1_id       = item.pic1;
+                output.im2_id       = item.pic2;
+                output.im3_id       = item.pic3;
+                output.im4_id       = item.pic4;
+                output.im1_fn       = images[item.pic1];
+                output.im2_fn       = images[item.pic2];
+                output.im3_fn       = images[item.pic3];
+                output.im4_fn       = images[item.pic4];
+                output.value        = test_page.response.value;
+                output.rt           = test_page.response.rt;
+                output.correct      = test_page.response.correct;
+
+                test_output_append(output);
             }
         }
     }
-
-
-
 
     Part
     {
