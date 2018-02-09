@@ -39,6 +39,7 @@ Experiment experiment
     {
         on_event:entry()
         {
+            control.button_box.enable_all_buttons(CONTINUE);
             entry_page.set_text(WELCOME_TEXT);
             entry_page.action(this, 0s);
         }
