@@ -2,21 +2,9 @@
 
 import std_sound_output_device;
 
-real OFFSET = 200;
-
-/*
- * Default offset
- */
-record DefOffset {
-    real x_offset;
-    real y_offset;
-};
-
-Page test_page
+Page discrimination_page
 {
-    TestItem    item;           // trial control parameters
-    bool        feedback = false;
-
+    DiscriminationItem    item;           // trial control parameters
 
     init()
     {
@@ -28,13 +16,13 @@ Page test_page
         // It is possible to respond with a keyboard, but it is much
         // better to use a BeexyBox.
         if (input_key == '1' || input_key == 'a')
-            response.process_hit(1, event_time);
+            response.process_hit(MATCH, event_time);
         else if (input_key == '2' || input_key == 'k')
-            response.process_hit(2, event_time);
+            response.process_hit(MISMATCH, event_time);
         else if (input_key == '3' || input_key == 'z')
-            response.process_hit(3, event_time);
+            response.process_hit(MATCH, event_time);
         else if (input_key == '4' || input_key == 'm')
-            response.process_hit(4, event_time);
+            response.process_hit(MISMATCH, event_time);
         else
             handle_special_key(this, input_key, input_modifiers);
     }
@@ -42,7 +30,13 @@ Page test_page
     on_event:message()
     {
         // Process button-box message. See setup() below.
-        response.process_hit(message_arg, event_time);
+        if (message_arg == 0) // button on the left side
+            response.process_hit(MATCH, event_time);
+        else if (message_arg == 1)
+            response.process_hit(MISMATCH, event_time);
+        else 
+            println("Whoopsie unexpected button value in discrimination_page"
+                "::message()");
     }
 
     VerticalLayout layout
@@ -58,7 +52,7 @@ Page test_page
             init()
             {
                 fill_pattern_color = TEST_PAGE_STIMULUS_COLOR;
-                size = 800, 800;
+                size = 400, 400;
 
                 // Place origin of the of the canvas in the center.
                 offset_x = width / 2;
@@ -75,132 +69,64 @@ Page test_page
                 }
             }
             
-            RectangleShape visfeedback
+            ImageShape image
             {
-                init ()
+                time action(string fn, time tstart, dur d=-0.001ms)
                 {
-                    fill_pattern_color = rgbi:255/255/255/128;
-                    width = 350;
-                    height= 350;
-                }
+                    image = stimuli_dir() + fn + ".png";
 
-                finish()
-                {
-                    done(CONTINUE);
-                }
-
-                time action(int pos, time tstart, dur d)
-                {
-                    if (test_page.feedback) // green
-                        fill_pattern_color = color:green;
-                    else // fully transparent.
-                        fill_pattern_color = rgbi:0/0/0/0;
-
-                    DefOffset offset;
-                    if (pos == 1)       offset = im1.offset;
-                    else if (pos == 2)  offset = im2.offset;
-                    else if (pos == 3)  offset = im3.offset;
-                    else if (pos == 4)  offset = im4.offset;
-                    else {
-                        println("Whoopsie, invalid pos in visfeedback::action");
-                    }
-
-                    offset_x = offset.x_offset - width/2;
-                    offset_y = offset.y_offset - height/2;
-
+                    offset_x = -image_width  / 2;
+                    offset_y = -image_height / 2;
                     start(tstart, d);
-                    return expected_finish_time;
-                }
-            }
-
-            ImageShape im1
-            {
-                DefOffset offset;
-
-                init()
-                {
-                    offset.x_offset = -OFFSET;
-                    offset.y_offset = -OFFSET;
-                }
-
-                time action(string fn, time tstart, dur d=-0.001ms)
-                {
-                    image = stimuli_dir() + fn + ".png";
-
-                    offset_x = offset.x_offset - image_width  / 2;
-                    offset_y = offset.y_offset - image_height / 2;
-                    im1.start(tstart, d);
 
                     return expected_start_time;
                 }
             }
-            
-            ImageShape im2
+        }
+
+        HorizontalLayout hlayout
+        {
+            init()
             {
-                DefOffset offset;
-
-                init()
-                {
-                    offset.x_offset = OFFSET;
-                    offset.y_offset = -OFFSET;
-                }
-
-                time action(string fn, time tstart, dur d=-0.001ms)
-                {
-                    image = stimuli_dir() + fn + ".png";
-
-                    offset_x = offset.x_offset - image_width  / 2;
-                    offset_y = offset.y_offset - image_height / 2;
-                    im2.start(tstart, d);
-
-                    return expected_start_time;
-                }
+                spacing = 50;
+                options = LAYOUT_EQUAL_WIDTH;
             }
-            
-            ImageShape im3
-            {
-                DefOffset offset;
 
+            ButtonGadget button_match
+            {
                 init()
                 {
-                    offset.x_offset = -OFFSET;
-                    offset.y_offset = OFFSET;
+                    text = CORRECT_BUTTON_TEXT;
+                    font_family = TEST_PAGE_BUTTON_FONT_FAMILY;
+                    font_size = TEST_PAGE_BUTTON_FONT_SIZE;
+                    fill_pattern_color = TEST_PAGE_BUTTON_COLOR;
+                    text_color = TEST_PAGE_BUTTON_TEXT_COLOR;
+                    size = 150, 75;
                 }
 
-                time action(string fn, time tstart, dur d=-0.001ms)
+                on_event:activate()
                 {
-                    image = stimuli_dir() + fn + ".png";
-
-                    offset_x = offset.x_offset - image_width  / 2;
-                    offset_y = offset.y_offset - image_height / 2;
-                    im3.start(tstart, d);
-
-                    return expected_start_time;
-                }
-            }
-            
-            ImageShape im4
-            {
-                DefOffset offset;
-
-                init()
-                {
-                    offset.x_offset = OFFSET;
-                    offset.y_offset = OFFSET;
-                }
-
-                time action(string fn, time tstart, dur d=-0.001ms)
-                {
-                    image = stimuli_dir() + fn + ".png";
-
-                    offset_x = offset.x_offset - image_width  / 2;
-                    offset_y = offset.y_offset - image_height / 2;
-                    im4.start(tstart, d);
-
-                    return expected_start_time;
+                    response.process_hit(MATCH, event_time);
                 }
             }
 
+            ButtonGadget button_mismatch
+            {
+                init()
+                {
+                    text = INCORRECT_BUTTON_TEXT;
+                    font_family = TEST_PAGE_BUTTON_FONT_FAMILY;
+                    font_size = TEST_PAGE_BUTTON_FONT_SIZE;
+                    fill_pattern_color = TEST_PAGE_BUTTON_COLOR;
+                    text_color = TEST_PAGE_BUTTON_TEXT_COLOR;
+                    size = 150, 75;
+                }
+
+                on_event:activate()
+                {
+                    response.process_hit(MISMATCH, event_time);
+                }
+            }
         }
 
         time start_fixation(time t, dur d)
@@ -209,29 +135,18 @@ Page test_page
             return layout.canvas.fixation.expected_finish_time;
         }
 
-        time start_images(time t, dur d)
+        time start_image(time t, dur d)
         {
-            string fn1 = images[item.pic1];
-            string fn2 = images[item.pic2];
-            string fn3 = images[item.pic3];
-            string fn4 = images[item.pic4];
+            string fn = images[item.pic];
+            layout.canvas.image.action(fn, t, d);
 
-            layout.canvas.im1.action(fn1, t, d);
-            layout.canvas.im2.action(fn2, t, d);
-            layout.canvas.im3.action(fn3, t, d);
-            layout.canvas.im4.action(fn4, t, d);
-
-            return layout.canvas.im1.expected_start_time;
+            return layout.canvas.image.expected_start_time;
         }
 
         void reset()
         {
             full_abort();
-            
-            layout.canvas.im1.is_visible = false;
-            layout.canvas.im2.is_visible = false;
-            layout.canvas.im3.is_visible = false;
-            layout.canvas.im4.is_visible = false;
+            layout.canvas.image.is_visible = false;
         }
     }
 
@@ -259,18 +174,18 @@ Page test_page
     Response response
     {
         // Response data.
-        int     value;          // response value: 1, 2, 3 or 4
-        int     rt;             // response time [ms]
-        int     correct;        // correct response: 0=no, 1=yes, -1=n.a.
+        MatchType   value;          // response value: (MIS-)MATCH NO_HIT
+        int         rt;             // response time [ms]
+        int         correct;        // correct response: 0=no, 1=yes, -1=n.a.
 
         void clear()
         {
-            value = -1;
+            value = NO_HIT;
             rt = -9999;
             correct = -1;
         }
 
-        void process_hit(int val, time t)
+        void process_hit(MatchType val, time t)
         {
             HitType validity = hit(t);
 
@@ -283,8 +198,6 @@ Page test_page
                 correct = value == item.correct ? 1 : 0;
                 ignore_remaining_hits();
 
-                layout.canvas.visfeedback.action(item.correct, t + 250ms, 500ms);
-
                 stop();
             }
             else if (validity == HIT_TOO_EARLY || validity == HIT_TOO_LATE)
@@ -295,7 +208,7 @@ Page test_page
 
         on_event:finish()
         {
-            layout.canvas.visfeedback.action(item.correct, event_time, 500ms);
+            done(CONTINUE);
         }
     }
 
@@ -316,7 +229,7 @@ Page test_page
     //==========================================================================
 
     // Performs preparatory work required before using this page.
-    void setup(int ntrials=-1, bool fb=false, bool pr=false)
+    void setup(int ntrials=-1, bool pr=false)
     {
         test_page_overlay.setup(this);
 
@@ -327,17 +240,14 @@ Page test_page
         // Enable or disable the progress bar.
         test_page_overlay.show_progress_bar(ntrials);   // disabled if < 0
 
-        // Enable or disable feedback. (We don't use the overlay)
-        feedback = fb;
-
         // Enable button-box buttons 0 and 1 for resp. no(0) and yes(1).
         control.target = this;
         control.button_box.disable_buttons();
 
-        control.button_box.enable_button(0, 1); // button 0 corresponds to pic1
-        control.button_box.enable_button(1, 3); // button 1 corresponds to pic3
-        control.button_box.enable_button(2, 4); // button 2 corresponds to pic4
-        control.button_box.enable_button(3, 2); // button 3 corresponds to pic2
+        control.button_box.enable_button(0, 0); // button 0 corresponds to pic1
+        control.button_box.enable_button(1, 0); // button 1 corresponds to pic3
+        control.button_box.enable_button(2, 1); // button 2 corresponds to pic4
+        control.button_box.enable_button(3, 1); // button 3 corresponds to pic2
     }
 
     // Performs cleaning up if necessary.
@@ -352,7 +262,7 @@ Page test_page
     // Starts a trial.
     void action(
         Object caller,
-        TestItem it,
+        DiscriminationItem it,
         time tref,
         int count=-1
         )
@@ -371,7 +281,7 @@ Page test_page
             FIXATION_DURATION);
 
         //start the four images
-        time im_onset = layout.start_images(fixoffset, -1ms);
+        time im_onset = layout.start_image(fixoffset, -1ms);
 
         // Start target stimulus at fixation offset
         string audiofn = sounds[item.audio];
@@ -386,13 +296,10 @@ Page test_page
 
         // Update status line on control window. Cleared in done() above.
         control.set_status(
-            string(item.id)     + "  " + 
-            string(item.audio)  + "  " + 
-            string(item.correct)+ "  " +
-            string(item.pic1)   + "  " +
-            string(item.pic2)   + "  " +
-            string(item.pic3)   + "  " +
-            string(item.pic4)
+            string(item.id)       + "  " + 
+            string(item.audio)    + "  " + 
+            string(item.pic)      + "  " +
+            string(item.correct)
             );
 
         // Remember who to signal when the trial is over.

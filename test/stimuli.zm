@@ -156,9 +156,10 @@ TestItem[..] test_items =
 //---------------- Stimuli for the discrimination phase -----------------------
 
 enum MatchType {
-    MATCH,      // 
-    MISMATCH    //
-}
+    MATCH,      // Visual and auditory stimuli match (they are a pair/unit)
+    MISMATCH,   // The two stimuli do not belong together
+    NO_HIT      // The participant didn't respond.
+};
 
 record DiscriminationItem {
     int         id;         // item id
@@ -169,7 +170,7 @@ record DiscriminationItem {
     MatchType   correct;    // Whether the response should be MATCH or MISMATCH
 };
 
-DiscriminationItem[..] discr_items = {
+DiscriminationItem[..] discrimination_items = {
 
     // Matching items 
     {1, S1, S1, MATCH},

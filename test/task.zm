@@ -8,6 +8,7 @@ import shuffle;
 import output;
 import test_page;
 import learn_page;
+import discrimination_page;
 
 
 Block task
@@ -70,174 +71,226 @@ Block task
 //            }
 //        }
 //    }
+//
+//    Part
+//    {
+//        on_event:entry()
+//        {
+//            blank_page.action_auto(this, 500ms);
+//        }
+//    }
+//
+//    Part instructions_practice_phase
+//    {
+//        on_event:entry()
+//        {
+////            pause_page.set_text_size(1000, 600);
+//            pause_page.set_text(PRE_PRAC_INSTRUCTION, true);
+//            pause_page.action(this);
+//            control.button_box.enable_all_buttons(CONTINUE);
+//        }
+//    }
+//    
+//    Part
+//    {
+//        on_event:entry()
+//        {
+//            blank_page.action_auto(this, 500ms);
+//        }
+//    }
+//
+//    Block practice_block 
+//    {
+//        TestItem        item;   // current item
+//
+//        on_event:entry()
+//        {
+//            // It is the user who ends this block. Not a fixed number of trials.
+//            num_cycles = prac_items.size;
+//
+//            // Prepare test page: progress bar enabled,
+//            // feedback enables
+//            // prompt disabled.
+//            test_page.setup(num_cycles, true, false);
+//        }
+//
+//        on_event:exit()
+//        {
+//            test_page.cleanup();
+//            practice_output_save();
+//        }
+//
+//        Trial trial
+//        {
+//            on_event:entry()
+//            {
+//                item = prac_items[practice_block.cycle];
+//                test_page.action(
+//                    this,
+//                    item,
+//                    reference_time,
+//                    practice_block.cycle
+//                    );
+//            }
+//
+//            on_event:exit()
+//            {
+//                TestOutput output;
+//                output.trialnum     = practice_block.cycle;
+//                output.id           = item.id;
+//                output.audio_id     = item.audio;
+//                output.audio_fn     = sounds[item.audio];
+//                output.correct_resp = item.correct;
+//                output.im1_id       = item.pic1;
+//                output.im2_id       = item.pic2;
+//                output.im3_id       = item.pic3;
+//                output.im4_id       = item.pic4;
+//                output.im1_fn       = images[item.pic1];
+//                output.im2_fn       = images[item.pic2];
+//                output.im3_fn       = images[item.pic3];
+//                output.im4_fn       = images[item.pic4];
+//                output.value        = test_page.response.value;
+//                output.rt           = test_page.response.rt;
+//                output.correct      = test_page.response.correct;
+//
+//                practice_output_append(output);
+//            }
+//        }
+//    }
+//
+//    Part
+//    {
+//        on_event:entry()
+//        {
+//            blank_page.action_auto(this, 500ms);
+//        }
+//    }
+//
+//    Part pause
+//    {
+//        on_event:entry()
+//        {
+//            pause_page.set_text(PRE_TEST_INSTRUCTION, true);
+//            pause_page.action(this);
+//            control.button_box.enable_all_buttons(CONTINUE);
+//        }
+//    }
+//
+//    Part
+//    {
+//        on_event:entry()
+//        {
+//            blank_page.action_auto(this, 500ms);
+//        }
+//    }
+//
+//    Block test_block 
+//    {
+//        TestItem        item;   // current item
+//
+//        on_event:entry()
+//        {
+//            // It is the user who ends this block. Not a fixed number of trials.
+//            num_cycles = test_items.size;
+//
+//            // Prepare test page: progress bar enabled,
+//            // feedback enables
+//            // prompt disabled.
+//            test_page.setup(num_cycles, false, false);
+//        }
+//
+//        on_event:exit()
+//        {
+//            test_page.cleanup();
+//            test_output_save();
+//        }
+//
+//        Trial trial
+//        {
+//            on_event:entry()
+//            {
+//                item = test_items[test_block.cycle];
+//                test_page.action(
+//                    this,
+//                    item,
+//                    reference_time,
+//                    test_block.cycle
+//                    );
+//            }
+//
+//            on_event:exit()
+//            {
+//                TestOutput output;
+//                output.trialnum     = test_block.cycle;
+//                output.id           = item.id;
+//                output.audio_id     = item.audio;
+//                output.audio_fn     = sounds[item.audio];
+//                output.correct_resp = item.correct;
+//                output.im1_id       = item.pic1;
+//                output.im2_id       = item.pic2;
+//                output.im3_id       = item.pic3;
+//                output.im4_id       = item.pic4;
+//                output.im1_fn       = images[item.pic1];
+//                output.im2_fn       = images[item.pic2];
+//                output.im3_fn       = images[item.pic3];
+//                output.im4_fn       = images[item.pic4];
+//                output.value        = test_page.response.value;
+//                output.rt           = test_page.response.rt;
+//                output.correct      = test_page.response.correct;
+//
+//                test_output_append(output);
+//            }
+//        }
+//    }
 
-    Part
+    Block discrimination_block 
     {
-        on_event:entry()
-        {
-            blank_page.action_auto(this, 500ms);
-        }
-    }
-
-    Part instructions_practice_phase
-    {
-        on_event:entry()
-        {
-//            pause_page.set_text_size(1000, 600);
-            pause_page.set_text(PRE_PRAC_INSTRUCTION, true);
-            pause_page.action(this);
-            control.button_box.enable_all_buttons(CONTINUE);
-        }
-    }
-    
-    Part
-    {
-        on_event:entry()
-        {
-            blank_page.action_auto(this, 500ms);
-        }
-    }
-
-    Block practice_block 
-    {
-        TestItem        item;   // current item
+        DiscriminationItem        item;   // current item
 
         on_event:entry()
         {
             // It is the user who ends this block. Not a fixed number of trials.
-            num_cycles = prac_items.size;
+            num_cycles = discrimination_items.size;
 
-            // Prepare test page: progress bar enabled,
-            // feedback enables
+            // Prepare discrimination page: progress bar enabled,
             // prompt disabled.
-            test_page.setup(num_cycles, true, false);
+            discrimination_page.setup(num_cycles, false);
         }
 
         on_event:exit()
         {
-            test_page.cleanup();
-            practice_output_save();
+            discrimination_page.cleanup();
+            discrimination_output_save();
         }
 
         Trial trial
         {
             on_event:entry()
             {
-                item = prac_items[practice_block.cycle];
-                test_page.action(
+                item = discrimination_items[discrimination_block.cycle];
+                discrimination_page.action(
                     this,
                     item,
                     reference_time,
-                    practice_block.cycle
+                    discrimination_block.cycle
                     );
             }
 
             on_event:exit()
             {
-                TestOutput output;
-                output.trialnum     = practice_block.cycle;
+                DiscriminationOutput output;
+                output.trialnum     = discrimination_block.cycle;
                 output.id           = item.id;
                 output.audio_id     = item.audio;
                 output.audio_fn     = sounds[item.audio];
                 output.correct_resp = item.correct;
-                output.im1_id       = item.pic1;
-                output.im2_id       = item.pic2;
-                output.im3_id       = item.pic3;
-                output.im4_id       = item.pic4;
-                output.im1_fn       = images[item.pic1];
-                output.im2_fn       = images[item.pic2];
-                output.im3_fn       = images[item.pic3];
-                output.im4_fn       = images[item.pic4];
-                output.value        = test_page.response.value;
-                output.rt           = test_page.response.rt;
-                output.correct      = test_page.response.correct;
+                output.im_id        = item.pic;
+                output.im_fn        = images[item.pic];
+                output.value        = discrimination_page.response.value;
+                output.rt           = discrimination_page.response.rt;
+                output.correct      = discrimination_page.response.correct;
 
-                practice_output_append(output);
-            }
-        }
-    }
-
-    Part
-    {
-        on_event:entry()
-        {
-            blank_page.action_auto(this, 500ms);
-        }
-    }
-
-    Part pause
-    {
-        on_event:entry()
-        {
-            pause_page.set_text(PRE_TEST_INSTRUCTION, true);
-            pause_page.action(this);
-            control.button_box.enable_all_buttons(CONTINUE);
-        }
-    }
-
-    Part
-    {
-        on_event:entry()
-        {
-            blank_page.action_auto(this, 500ms);
-        }
-    }
-
-    Block test_block 
-    {
-        TestItem        item;   // current item
-
-        on_event:entry()
-        {
-            // It is the user who ends this block. Not a fixed number of trials.
-            num_cycles = test_items.size;
-
-            // Prepare test page: progress bar enabled,
-            // feedback enables
-            // prompt disabled.
-            test_page.setup(num_cycles, false, false);
-        }
-
-        on_event:exit()
-        {
-            test_page.cleanup();
-            test_output_save();
-        }
-
-        Trial trial
-        {
-            on_event:entry()
-            {
-                item = test_items[test_block.cycle];
-                test_page.action(
-                    this,
-                    item,
-                    reference_time,
-                    test_block.cycle
-                    );
-            }
-
-            on_event:exit()
-            {
-                TestOutput output;
-                output.trialnum     = test_block.cycle;
-                output.id           = item.id;
-                output.audio_id     = item.audio;
-                output.audio_fn     = sounds[item.audio];
-                output.correct_resp = item.correct;
-                output.im1_id       = item.pic1;
-                output.im2_id       = item.pic2;
-                output.im3_id       = item.pic3;
-                output.im4_id       = item.pic4;
-                output.im1_fn       = images[item.pic1];
-                output.im2_fn       = images[item.pic2];
-                output.im3_fn       = images[item.pic3];
-                output.im4_fn       = images[item.pic4];
-                output.value        = test_page.response.value;
-                output.rt           = test_page.response.rt;
-                output.correct      = test_page.response.correct;
-
-                test_output_append(output);
+                discrimination_output_append(output);
             }
         }
     }
