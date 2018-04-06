@@ -16,6 +16,7 @@ Page test_page
 {
     TestItem    item;           // trial control parameters
     bool        feedback = false;
+    int         correct;
 
 
     init()
@@ -75,6 +76,7 @@ Page test_page
                 }
             }
             
+            // This rectangle shape indicates what was the correct response
             RectangleShape visfeedback
             {
                 init ()
@@ -91,7 +93,9 @@ Page test_page
 
                 time action(int pos, time tstart, dur d)
                 {
-                    if (test_page.feedback) // green
+                    // display feedback when a answer was incorrect
+                    // and it is desired
+                    if (test_page.feedback && test_page.correct <= 0) // green
                         fill_pattern_color = color:green;
                     else // fully transparent.
                         fill_pattern_color = rgbi:0/0/0/0;
@@ -201,6 +205,56 @@ Page test_page
                 }
             }
 
+            // Feedback to indicate that the participant gave an incorrect
+            // response
+            CrossShape incorrect
+            {
+                init()
+                {
+                    rotation = 1.0/8.0 * 2.0 *M_PI;
+                    line_pattern_color = INCORRECT_FEEDBACK_COLOR;
+                    line_width = 20.0 * FB_SCALING;
+                    radius = 100 * FB_SCALING;
+                }
+
+                time action(time tstart, dur duration=-1ms)
+                {
+                    if (test_page.feedback)
+                        line_pattern_color = INCORRECT_FEEDBACK_COLOR;
+                    else
+                        line_pattern_color = rgbi:0/0/0/0;
+                    start(tstart, duration);
+                    return expected_start_time;
+                }
+            }
+
+            // Feedback for correct response a check mark
+            PolylineShape correct
+            {
+                init()
+                {
+                    num_points = 3;
+                    set_x(0, -50 * FB_SCALING);
+                    set_y(0, -50 * FB_SCALING);
+                    set_x(1, -25 * FB_SCALING);
+                    set_y(1,  25 * FB_SCALING);
+                    set_x(2,  75 * FB_SCALING);
+                    set_y(2, -75 * FB_SCALING);
+
+                    line_pattern_color = CORRECT_FEEDBACK_COLOR;
+                    line_width = 20.0 * FB_SCALING;
+                }
+
+                time action(time tstart, dur duration=-1ms)
+                {
+                    if (test_page.feedback)
+                        line_pattern_color = CORRECT_FEEDBACK_COLOR;
+                    else
+                        line_pattern_color = rgbi:0/0/0/0;
+                    start(tstart, duration);
+                    return expected_start_time;
+                }
+            }
         }
 
         time start_fixation(time t, dur d)
@@ -281,12 +335,14 @@ Page test_page
                 value = val;
                 rt = int(reaction_time(0));
                 correct = value == item.correct ? 1 : 0;
+                test_page.correct = correct;
                 ignore_remaining_hits();
 
-                layout.canvas.visfeedback.action(item.correct, t + 250ms, 500ms);
+//                layout.canvas.visfeedback.action(item.correct, t + 250ms, 500ms);
 
                 stop();
             }
+
             else if (validity == HIT_TOO_EARLY || validity == HIT_TOO_LATE)
             {
                 // False alarm. Deal with this if desired.
@@ -295,7 +351,24 @@ Page test_page
 
         on_event:finish()
         {
-            layout.canvas.visfeedback.action(item.correct, event_time, 500ms);
+            if (!correct)
+            {
+                layout.canvas.visfeedback.action(
+                    item.correct,
+                    event_time,
+                    500ms
+                    );
+                layout.canvas.incorrect.action(event_time, 500ms);
+            }
+            else
+            {
+                layout.canvas.visfeedback.action(
+                    item.correct,
+                    event_time,
+                    500ms
+                    );
+                layout.canvas.correct.action(event_time, 500ms);
+            }
         }
     }
 

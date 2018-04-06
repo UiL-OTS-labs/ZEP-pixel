@@ -17,3 +17,14 @@ const dur       FEEDBACK_DURATION               = 250ms;
 // without the participant provides a response.
 //const dur       RESPONSE_DURATION               = 2000ms;       // auto-paced
 const dur       RESPONSE_DURATION               = 0ms;          // self-paced
+
+// color for correct feedback
+const color     CORRECT_FEEDBACK_COLOR          = color:green;
+
+// color for incorrect feedback
+const color     INCORRECT_FEEDBACK_COLOR        = color:red;
+
+// scaling of the size of the feedback. 0.5 = half as big, 2 is twice as big
+// This only works for the cross and check mark, not the green square
+real            FB_SCALING                      = 0.5;
+
