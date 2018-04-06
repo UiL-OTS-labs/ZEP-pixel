@@ -65,7 +65,7 @@ Block task
             {
                 LearnOutput output;
 
-                output.trialnum = learning_block.cycle;
+                output.trialnum = learning_block.cycle + 1;
                 output.id       = learn_page.item.learn_id;
                 output.stimpair = learn_page.item.pair_num;
                 output.audio_fn = sounds[output.stimpair];
@@ -73,7 +73,6 @@ Block task
 
                 learn_output_append(output);
 
-                println("is_finished = " + learn_page.is_finished());
                 if (learn_page.is_finished()) {
                     // set num_cycles to the current cycle to finish this block.
                     learning_block.num_cycles = learning_block.cycle;
@@ -146,7 +145,7 @@ Block task
             on_event:exit()
             {
                 TestOutput output;
-                output.trialnum     = practice_block.cycle;
+                output.trialnum     = practice_block.cycle + 1;
                 output.id           = item.id;
                 output.audio_id     = item.audio;
                 output.audio_fn     = sounds[item.audio];
@@ -231,7 +230,7 @@ Block task
             on_event:exit()
             {
                 TestOutput output;
-                output.trialnum     = test_block.cycle;
+                output.trialnum     = test_block.cycle + 1;
                 output.id           = item.id;
                 output.audio_id     = item.audio;
                 output.audio_fn     = sounds[item.audio];
@@ -315,7 +314,7 @@ Block task
             on_event:exit()
             {
                 DiscriminationOutput output;
-                output.trialnum     = discrimination_block.cycle;
+                output.trialnum     = discrimination_block.cycle + 1;
                 output.id           = item.id;
                 output.audio_id     = item.audio;
                 output.audio_fn     = sounds[item.audio];
