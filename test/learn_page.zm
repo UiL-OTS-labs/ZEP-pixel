@@ -93,7 +93,7 @@ Page learn_page
         {
             init()
             {
-                text = "Instruction while learning.";
+                text = WHILE_LEARNING_INSTRUCTION;
                 font_family = TEST_PAGE_LABEL_FONT_FAMILY;
                 font_size   = TEST_PAGE_LABEL_FONT_SIZE;
             }

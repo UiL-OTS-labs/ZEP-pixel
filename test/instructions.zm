@@ -29,6 +29,9 @@ const string PRE_LEARN_INSTRUCTION =
     "your task is to etc etc."
     ;
 
+const string WHILE_LEARNING_INSTRUCTION =
+   M"Please learn the words with the corresponding pictures.";
+
 // Instruction prior to the practice phase.
 const string PRE_PRAC_INSTRUCTION = 
    M"Now that we have learned which sounds and pictures belong together\n"
