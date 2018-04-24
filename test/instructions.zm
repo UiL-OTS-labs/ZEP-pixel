@@ -56,3 +56,11 @@ const string PRE_DISCR_INSTRUCTION =
     "button for a mismatch."
     "The show must go on. <b>Hang on!!</b>"
     ;
+
+const string GOBACK_INSTRUCTION =
+   M"In the next session your about to be tested whether you know which\n"
+    "picture belongs to which sound."
+    "press the left button to go back to the learning phase and the\n"
+    "right (continue) button when you are confident you know which stimulus"
+    "belongs to which sound.
+    ;
