@@ -58,9 +58,9 @@ const string PRE_DISCR_INSTRUCTION =
     ;
 
 const string GOBACK_INSTRUCTION =
-   M"In the next session your about to be tested whether you know which\n"
-    "picture belongs to which sound."
+   M"In the next session your about to be tested whether you know\n"
+    "which picture belongs to which sound.\n"
     "press the left button to go back to the learning phase and the\n"
-    "right (continue) button when you are confident you know which stimulus"
-    "belongs to which sound.
+    "right (continue) button when you are confident you know which\n"
+    "stimulus belongs to which sound."
     ;
