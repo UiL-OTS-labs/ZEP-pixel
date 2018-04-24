@@ -501,9 +501,13 @@ Page learn_page
 
 
     // Performs cleaning up if necessary.
-    void cleanup()
+    void cleanup(bool presented=true)
     {
         test_page_overlay.cleanup();
+        
+        new_item            = 0; // the index for the next item.
+        next_item           = NEXT_ITEM;
+        init_presented(learn_items.size);
 
         control.button_box.disable_buttons();
         control.target = null;
