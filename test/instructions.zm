@@ -29,6 +29,9 @@ const string PRE_LEARN_INSTRUCTION =
     "your task is to etc etc."
     ;
 
+const string WHILE_LEARNING_INSTRUCTION =
+   M"Please learn the words with the corresponding pictures.";
+
 // Instruction prior to the practice phase.
 const string PRE_PRAC_INSTRUCTION = 
    M"Now that we have learned which sounds and pictures belong together\n"
@@ -52,4 +55,12 @@ const string PRE_DISCR_INSTRUCTION =
     "you to make it happen. Press the left button for a match and a right\n"
     "button for a mismatch."
     "The show must go on. <b>Hang on!!</b>"
+    ;
+
+const string GOBACK_INSTRUCTION =
+   M"In the next session your about to be tested whether you know\n"
+    "which picture belongs to which sound.\n"
+    "press the left button to go back to the learning phase and the\n"
+    "right (continue) button when you are confident you know which\n"
+    "stimulus belongs to which sound."
     ;

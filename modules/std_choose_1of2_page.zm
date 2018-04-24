@@ -1,0 +1,259 @@
+/******************************************************************************\
+FILE:           std_choose_1of2_page.zm
+AUTHOR:         Theo Veenker <theo.veenker@beexy.nl>
+ADAPTED BY:     -
+
+DESCRIPTION:
+
+Provides a page object for presenting two-point scales. The participant must
+respond to a question/statement by clicking one of two buttons or by pressing
+corresponding keys. Buttons can be hidden if desired. If participant should be
+allowed to correct their answer use std_check_1of2_page.zm instead.
+
+
+HISTORY:
+2010-12-14 TV   Created as part of the standard Zep modules.
+
+\******************************************************************************/
+
+
+Page choose_1of2_page
+{
+    char        key1;           // key for response 1
+    char        key2;           // key for response 2
+    char        altkey1;        // alternate key for response 1
+    char        altkey2;        // alternate key for response 2
+
+
+    init()
+    {
+        fill_pattern_color = INPUT_PAGE_COLOR;
+    }
+
+
+    on_event:key_press()
+    {
+        if (input_key == key1 || input_key == altkey1)
+            response.process_hit(1, event_time);
+        else if (input_key == key2 || input_key == altkey2)
+            response.process_hit(2, event_time);
+        else
+            handle_special_key(this, input_key, input_modifiers);
+    }
+
+    on_event:message()
+    {
+        response.process_hit(message_arg, event_time);
+    }
+
+
+    VerticalLayout layout
+    {
+        init()
+        {
+            spacing = 100;
+            options = LAYOUT_SHRINK_ITEMS;
+        }
+
+
+        LabelGadget message
+        {
+            init()
+            {
+                font_family = INPUT_PAGE_MESSAGE_FONT_FAMILY;
+                font_size = INPUT_PAGE_MESSAGE_FONT_SIZE;
+                fill_pattern_color = INPUT_PAGE_MESSAGE_COLOR;
+                text_color = INPUT_PAGE_MESSAGE_TEXT_COLOR;
+//              hor_alignment = ALIGN_CENTER;
+//              ver_alignment = ALIGN_CENTER;
+                is_wrapping = true;
+                size = 800, 200;
+                margin = 20;
+            }
+        }
+
+
+        HorGridLayout buttons
+        {
+            init()
+            {
+                wrap_count = 2;
+                hor_spacing = 10;
+                ver_spacing = 10;
+                options = LAYOUT_EQUAL_WIDTH;
+            }
+
+
+            ButtonGadget button1
+            {
+                init()
+                {
+//                  text = "1";
+                    font_family = INPUT_PAGE_BUTTON_FONT_FAMILY;
+                    font_size = INPUT_PAGE_BUTTON_FONT_SIZE;
+                    fill_pattern_color = INPUT_PAGE_BUTTON_COLOR;
+                    text_color = INPUT_PAGE_BUTTON_TEXT_COLOR;
+                }
+
+
+                on_event:activate()
+                {
+                    response.process_hit(1, event_time);
+                }
+            }
+
+
+            ButtonGadget button2
+            {
+                init()
+                {
+//                  text = "2";
+                    font_family = INPUT_PAGE_BUTTON_FONT_FAMILY;
+                    font_size = INPUT_PAGE_BUTTON_FONT_SIZE;
+                    fill_pattern_color = INPUT_PAGE_BUTTON_COLOR;
+                    text_color = INPUT_PAGE_BUTTON_TEXT_COLOR;
+                }
+
+
+                on_event:activate()
+                {
+                    response.process_hit(2, event_time);
+                }
+            }
+        }
+    }
+
+
+    Response response
+    {
+        int     goodvalue;      // correct answer to question (0 if n.a.)
+        int     value;          // response value: 1..2 (0 on timeout)
+        int     rt;             // response time [ms]
+        bool    correct;        // true if correct answer given (if applicable)
+
+
+        void clear()
+        {
+            goodvalue = 0;
+            value = 0;
+            rt = -9999;
+            correct = false;
+        }
+
+
+        void process_hit(int val, time t)
+        {
+            if (hit(t) == HIT_VALID)
+            {
+                value = val;
+                rt = int(reaction_time(0));
+                correct = val == goodvalue;
+
+                ignore_remaining_hits();
+
+                stop();
+            }
+        }
+
+
+        on_event:finish()
+        {
+            done(CONTINUE);
+        }
+    }
+
+
+    void done(int msgid)
+    {
+        signal_target(msgid);   // Tell caller we're done.
+        target = null;
+    }
+
+
+    //==========================================================================
+
+
+    void set_text(string txt, bool markup=false)
+    {
+        layout.message.text = txt, markup;
+    }
+
+
+    void set_label_texts(string s1, string s2)
+    {
+        layout.buttons.button1.text = s1;
+        layout.buttons.button2.text = s2;
+    }
+
+
+    void show_buttons()
+    {
+        layout.buttons.is_managed = true;
+    }
+
+
+    void hide_buttons()
+    {
+        layout.buttons.is_managed = false;
+    }
+
+
+    void set_keys(char k1, char k2)
+    {
+        key1 = k1;
+        key2 = k2;
+    }
+
+
+    void set_alternate_keys(char k1, char k2)
+    {
+        altkey1 = k1;
+        altkey2 = k2;
+    }
+
+
+    void action(Object caller, int correct=0, dur timeout=0s,
+        dur showdelay=-1s, dur fadedur=-1s)
+    {
+        response.clear();
+        response.goodvalue = correct;
+
+        // Force page show delay and transition duration in sane range.
+        if (showdelay < 0s) showdelay = page_transition_delay;
+        else showdelay = limit(showdelay, 0s, MAX_PAGE_TRANSITION_DELAY);
+        if (fadedur < 0s) fadedur = PAGE_TRANSITION_DURATION;
+        else fadedur = limit(fadedur, 0s, MAX_PAGE_TRANSITION_DURATION);
+
+        // Clear page transition delay.
+        page_transition_delay = 0s;
+
+        // Clear first trial delay.
+        first_trial_delay = 0s;
+
+        if (test_window1.show_page(this, now() + showdelay, fadedur) == 0)
+        {
+            // Page not yet shown. Let response period begin when the page
+            // is fully visible (fade-in has finished).
+            response.start(expected_transition_finish_time, timeout);
+        }
+        else
+        {
+            // Page already shown. Let response period begin immediately.
+            response.start(now(), timeout);
+        }
+
+        target = caller;
+
+        test_window1.activate();
+
+        // Let control know to which object to send button presses.
+        control.target = this;
+    }
+
+
+    void stop_action()
+    {
+        response.abort();
+        target = null;
+    }
+}

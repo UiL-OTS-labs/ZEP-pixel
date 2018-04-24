@@ -9,6 +9,7 @@ import output;
 import test_page;
 import learn_page;
 import discrimination_page;
+import std_choose_1of2_page;
 
 
 Block task
@@ -88,6 +89,47 @@ Block task
             blank_page.action_auto(this, 500ms);
         }
     }
+    
+    Part
+    {
+        on_event:entry()
+        {
+            blank_page.action_auto(this, 500ms);
+        }
+    }
+
+    Part goback_page
+    {
+        on_event:entry()
+        {
+            choose_1of2_page.set_text(GOBACK_INSTRUCTION);
+            control.button_box.disable_buttons();
+            control.button_box.enable_button(0, 1);
+            control.button_box.enable_button(1, 1);
+            control.button_box.enable_button(2, 2);
+            control.button_box.enable_button(3, 2);
+            choose_1of2_page.set_label_texts("go back", "continue");
+            choose_1of2_page.action(this);
+        }
+    }
+
+    TransientPart goback_or_not
+    {
+        on_event:entry()
+        {
+            int resp = choose_1of2_page.response.value;
+            if (resp == 1)
+                learning_block.enter();
+        }
+    }
+    
+    Part
+    {
+        on_event:entry()
+        {
+            blank_page.action_auto(this, 500ms);
+        }
+    }
 
     Part instructions_practice_phase
     {
@@ -100,13 +142,6 @@ Block task
         }
     }
     
-    Part
-    {
-        on_event:entry()
-        {
-            blank_page.action_auto(this, 500ms);
-        }
-    }
 
     Block practice_block 
     {
