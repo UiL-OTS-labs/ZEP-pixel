@@ -28,3 +28,7 @@ const color     INCORRECT_FEEDBACK_COLOR        = color:red;
 // This only works for the cross and check mark, not the green square
 real            FB_SCALING                      = 0.5;
 
+// The size for the number of items in a test block. The testitems will be
+// shuffled in groups of BLOCK_SIZE
+const int       BLOCK_SIZE                      = 6;
+

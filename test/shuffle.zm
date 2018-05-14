@@ -2,6 +2,8 @@
  * Implements shuffling of all to be shuffled items
  */
 
+import defs;
+
 /**
  * Shuffle all items in this experiment.
  *
@@ -12,14 +14,16 @@
 int shuffle_test_items()
 {
     int nth_block   = 0;
-    int BLOCK_SIZE  = 7;
 
     learn_items.shuffle(0, -1);
     prac_items.shuffle(0, -1);
     discrimination_items.shuffle(0, -1);
 
     while (nth_block * BLOCK_SIZE + BLOCK_SIZE - 1 < test_items.size) {
-        test_items.shuffle(nth_block * 7, nth_block * 7 + BLOCK_SIZE);
+        test_items.shuffle(
+            nth_block * BLOCK_SIZE,
+            nth_block * BLOCK_SIZE + BLOCK_SIZE
+            );
         nth_block++;
     }
 
@@ -33,9 +37,6 @@ int shuffle_test_items()
             );
         print_error("test_items.size = " + test_items.size + "\n");
     }
-
-    // The test_items are shuffled in blocks of seven.
-    test_items.shuffle(0, -1);
 
     return OK;
 }
